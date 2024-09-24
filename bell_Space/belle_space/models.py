@@ -13,6 +13,7 @@ from django.contrib.auth.models import User
 #         return f"{self.first_name} {self.last_name}"
 class UsersDetail(models.Model):
     user = models.OneToOneField(User, on_delete=models.PROTECT)
+    
     phone_number = models.CharField(max_length=10, null=True)
 
     def get_full_name(self):
