@@ -24,3 +24,12 @@ class UserDetailLoginForm(ModelForm):
         widgets = {
             "birth_date" : DateInput(attrs={"type": "date"}),
             }
+    def clean(self):
+        cleaned_data = super().clean()
+        birth_date = cleaned_data.get("hire_date")
+        birth_now = datetime.now().date()
+        if birth_date > birth_now:
+            raise ValidationError(
+                    "birth_date ว่าจะต้องไม่เป็นวันในอนาคต"
+            )
+        return cleaned_data
