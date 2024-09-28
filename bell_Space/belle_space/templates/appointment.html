@@ -1,0 +1,33 @@
+{% extends 'layout.html' %}
+{%  block page_title %}All Appointment{% endblock %}
+
+{%  block header %}appoject{% endblock %}
+{%  block content %}
+
+<div class="itemGroup">
+        <div>
+            <br>
+            <!-- กำหนด path ไปยังหน้า form สร้าง project -->
+            <a href="{% url 'appointment_form' %}"><button class="newappo">Make an Appointment</button></a>
+        </div>
+        {% for appo in appointment %}
+            <div class="item">
+                    <!-- โปรเจค id และ ชื่อ -->
+                    <div>{{appo.id}} . {{appo.service}}</div>
+
+                    <!-- วันเริ่ม และ วันกำหนดส่งโปรเจค -->
+                    <div>{{appo.a_date}}</div>
+
+                    <div>{{appo.staff}}</div>
+                    <div class="action">
+                        <!-- กำหนด path ให้ถูกต้อง -->
+                        <a href="{% url 'appointment' appo.id %}" class="edit btn">แก้ไข</a>
+                        
+                        <!-- ถ้า code มันแจ้งเตือนอะไรก็ปล่อยไปนะครับไม่มีผลอะไร  -->
+                        <!-- <button type="submit" onclick="deleteAppointment('{{appo.id}}','{{csrf_token}}')" class="delete">Delete</button> -->
+                    </div>
+                
+            </div>
+        {% endfor %}
+        </div>
+{% endblock %}

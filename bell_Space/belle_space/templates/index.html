@@ -1,32 +1,10 @@
-<!DOCTYPE html>
-<html lang="th" class="scroll-smooth focus:scroll-auto">
+{% extends 'layout.html' %}
+{% load static %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BelleSpace</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-
-    <!-- font metal -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Metal&display=swap" rel="stylesheet">
-</head>
-
-<body class="">
-
-    <nav class="bg-[#3A1212] text-white p-4 fixed flex justify-between w-full pl-10">
-        <a href="#" class="hover:text-[#D18F90] text-3xl font-bold ml-5">BelleSpace</a>
-
-        <div class="flex space-x-6">
-            <a href="#" class="text-2xl text-[#EDDCC2] hover:text-[#EDDCC2] relative">จอง</a>
-            <a href="#" class="text-2xl text-[#EDDCC2] hover:text-[#EDDCC2] relative">ประวัติการจอง</a>
-            <a href="#" class="text-2xl text-[#EDDCC2] hover:text-[#EDDCC2] relative">เข้าสู่ระบบ</a>
-        </div>
-    </nav>
+{%  block content %}
 
     <!-- all -->
-    <div>
+    <div class="font">
         <!-- sec1 -->
         <div class="bg-[#EDDCC2]">
             <!-- sec1 content -->
@@ -49,7 +27,7 @@
                     <!-- บริการผม -->
                     <div class="bg-[#EDDCC2] rounded-lg shadow-lg p-6 max-w-sm text-center">
                         <div class="mb-4">
-                            <img src="../static/img/hair.png" alt="Hair Icon" class="mx-auto w-32">
+                            <img src="../static/image/hair.png" alt="Hair Icon" class="mx-auto w-32">
                         </div>
                         <h2 class="text-2xl font-semibold text-[#5A2E23] mb-4">ผม</h2>
                         <p class="text-[#5A2E23] text-lg mb-4 py-10 px-7">บริการทำผมครอบคลุมทุกความต้องการ ทั้งตัด สระ
@@ -63,7 +41,7 @@
                     <!-- บริการเล็บ -->
                     <div class="bg-[#EDDCC2] rounded-lg shadow-lg p-6 max-w-sm text-center">
                         <div class="mb-4">
-                            <img src="../static/img/nail.png" alt="Nail Icon" class="mx-auto w-32">
+                            <img src="../static/image/nail.png" alt="Nail Icon" class="mx-auto w-32">
                         </div>
                         <h2 class="text-2xl font-semibold text-[#5A2E23] mb-4">เล็บ</h2>
                         <p class="text-[#5A2E23] text-lg mb-4 py-10 px-7">บริการทำเล็บ ทั้งตัดแต่ง ทาสี เจล และเพ้นท์ลาย
@@ -76,7 +54,7 @@
                     <!-- บริการสปา -->
                     <div class="bg-[#EDDCC2] rounded-lg shadow-lg p-6 max-w-sm text-center">
                         <div class="mb-4">
-                            <img src="../static/img/spa.png" alt="Spa Icon" class="mx-auto w-32">
+                            <img src="../static/image/spa.png" alt="Spa Icon" class="mx-auto w-32">
                         </div>
                         <h2 class="text-2xl font-semibold text-[#5A2E23] mb-4">สปา</h2>
                         <p class="text-[#5A2E23] text-lg mb-4 py-10 px-7">
@@ -201,6 +179,5 @@
             </div>
         </div>
     </div>
-</body>
 
-</html>
+{% endblock %}

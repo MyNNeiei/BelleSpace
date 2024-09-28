@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+
+{% block title%} Make an Appointment {% endblock %}
+
+{% block head%}
+<h1>Form Appointment</h1>
+{% endblock %}
+
+{% block content %}
+<div class="appointment-form-box">
+    <form method="post">
+        {% csrf_token %}
+        {{ form }}
+        <button type="submit">Save</button>
+    </form>
+</div>
+
+{% endblock %}
