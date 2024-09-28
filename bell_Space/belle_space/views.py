@@ -64,6 +64,6 @@ class AppointmentView(View):
 #         return render(request, "index.html", context)
         
     
-class LoginView(View):
+class RegisterFormView(View):
     def get(self, request):
         return render(request, "login.html")

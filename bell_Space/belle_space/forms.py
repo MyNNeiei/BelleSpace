@@ -3,8 +3,8 @@ from django.forms import ModelForm, SplitDateTimeField
 from django.forms.widgets import Textarea, TextInput, DateInput
 from django.core.exceptions import ValidationError
 from .models import *
-
-class UserLoginForm(ModelForm):
+from django.contrib.auth.forms import UserCreationForm
+class UserRegisterForm(ModelForm):
     class Meta:
         model = User
         fields = [
@@ -14,6 +14,16 @@ class UserLoginForm(ModelForm):
             "first_name",
             "last_name",
         ]
+    def clean(self):
+        cleaned_data = super().clean()
+        birth_date = cleaned_data.get("birth_date")
+        birth_now = datetime.now().date()
+        if birth_date > birth_now:
+            raise ValidationError(
+                    "birth_date ว่าจะต้องไม่เป็นวันในอนาคต"
+            )
+        return cleaned_data
+
 # class UserDetailLoginForm(ModelForm):
 #     class Meta:
 #         model = UsersDetail
