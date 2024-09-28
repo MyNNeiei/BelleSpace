@@ -47,7 +47,3 @@ class Service(models.Model):
 
 class Categories(models.Model):
     name = models.CharField(max_length=255, null=True)
-
-
-
-    
