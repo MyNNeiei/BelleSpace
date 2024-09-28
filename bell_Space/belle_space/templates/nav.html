@@ -9,11 +9,11 @@
 </head>
 <body>
     <nav>
-        <a href="#" class="belle">BelleSpace</a>
+        <a href="{% url 'home' %}" class="belle">BelleSpace</a>
 
         <div class="content">
-            <a href="#" >จอง</a>
-            <a href="#" >ประวัติการจอง</a>
+            <a href="{% url 'appointment_form' %}" >จอง</a>
+            <a href="{% url 'appointment' %}" >ประวัติการจอง</a>
             <a href="#" >เข้าสู่ระบบ</a>
         </div>
     </nav>

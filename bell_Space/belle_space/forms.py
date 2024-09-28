@@ -14,44 +14,53 @@ class UserLoginForm(ModelForm):
             "first_name",
             "last_name",
         ]
-class UserDetailLoginForm(ModelForm):
-    class Meta:
-        model = UsersDetail
-        fields = [
-            "birth_date",
-            "phone_number"
-        ]
-        widgets = {
-            "birth_date" : DateInput(attrs={"type": "date"}),
-            }
-    def clean(self):
-        cleaned_data = super().clean()
-        birth_date = cleaned_data.get("hire_date")
-        birth_now = datetime.now().date()
-        if birth_date > birth_now:
-            raise ValidationError(
-                    "birth_date ว่าจะต้องไม่เป็นวันในอนาคต"
-            )
-        return cleaned_data
+# class UserDetailLoginForm(ModelForm):
+#     class Meta:
+#         model = UsersDetail
+#         fields = [
+#             "birth_date",
+#             "phone_number"
+#         ]
+#         widgets = {
+#             "birth_date" : DateInput(attrs={"type": "date"}),
+#             }
+#     def clean(self):
+#         cleaned_data = super().clean()
+#         birth_date = cleaned_data.get("hire_date")
+#         birth_now = datetime.now().date()
+#         if birth_date > birth_now:
+#             raise ValidationError(
+#                     "birth_date ว่าจะต้องไม่เป็นวันในอนาคต"
+#             )
+#         return cleaned_data
 
 class AppointmentForm(ModelForm):
     class Meta:
         model = Appointment
         fields = [
-            "get_full_name",
+            "first_name",
+            "last_name",
             "service", 
             "staff",
             "appointment_date",
         ]
+        model = User
+        fields = [
+            "first_name",
+            "last_name",
+
+        ]
+
         widgets = {
             "appointment_date" : DateInput(attrs={"type": "date"}),
             }
     
     def clean(self):   
         cleaned_data = super().clean()
-        get_full_name = cleaned_data.get("get_full_name")
-        service = cleaned_data.get("service")
-        staff = cleaned_data.get("staff")
+
+        # service = cleaned_data.get("service")
+        # staff = cleaned_data.get("staff")
+
         appointment_date = cleaned_data.get("appointment_date")
         appointment_date = datetime.now().date()
         if appointment_date < appointment_date:
