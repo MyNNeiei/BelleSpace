@@ -1,0 +1,23 @@
+{% extends "layout.html" %}
+
+{% block title %} จองบริการ {% endblock %}
+
+{% block head %}
+<h1 class="text-xl font-bold text-center mt-4">จองบริการ</h1>
+{% endblock %}
+
+{% block content %}
+<div class="bg-[#74342B] h-screen w-full flex justify-center items-center">
+    <form method="post" class="bg-[#f8e9d2] px-16 py-24 rounded-xl shadow-md w-100 gap-12;">
+        {% csrf_token %}
+        <div class="mb-4">
+            {{ form.as_p }}
+        </div>
+        <div class="flex justify-center">
+            <button type="submit" class="bg-[#D18F90] text-[#74342B] text-2xl font-bold px-6 py-5 rounded-lg hover:bg-gray-800">
+                ยืนยันการจอง
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}
