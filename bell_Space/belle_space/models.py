@@ -12,10 +12,18 @@ from django.contrib.auth.models import User
 #     def get_full_name(self):
 #         return f"{self.first_name} {self.last_name}"
 class UsersDetail(models.Model):
-    user = models.OneToOneField(User, on_delete=models.PROTECT)
+    class Gender(models.Choices):
+        M = "Male"
+        F = "Female"
+        LGBTQ = "LGBTQ+"
+        O = "Other"
     
+    user = models.OneToOneField(User, on_delete=models.PROTECT)
+    birth_date = models.DateTimeField()
     phone_number = models.CharField(max_length=10, null=True)
-
+    gender = models.CharField(max_length=10, choices=Gender.choices)
+    image_profile = models.ImageField(upload_to='profile_pic')
+    
     def get_full_name(self):
         return f"{self.user.first_name} {self.user.last_name}"
 
@@ -33,7 +41,7 @@ class Appointment(models.Model):
         COMPLETED = "Completed", "Completed"
     
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)  # Linking with the built-in User model
-    service = models.ForeignKey("Service", on_delete=models.SET_NULL, null=True, blank=True)
+    category = models.ForeignKey("Categories", on_delete=models.SET_NULL, null=True, blank=True)
     appointment_date = models.DateTimeField()
     status = models.CharField(max_length=10, choices=Status.choices, default=Status.PENDING)
     staff = models.ManyToManyField("Staff")
