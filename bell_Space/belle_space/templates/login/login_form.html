@@ -18,12 +18,12 @@
 </head>
 <body>
     <div class="form">
-        <form action="post">
+        <form action="post" class="flex justify-center items-center flex-col">
             {% csrf_token %}
             {{ form }}
         <div class="flex justify-start items-center">
             <button type="submit">Submit</button>
-            <div class="flex justify-end flex-row">
+            <div class="flex justify-end flex-row gap-8">
                 <p>หากไม่มี Account</p>
                 <a href="{% url 'register_form' %}">Sign in</a>
             </div>
