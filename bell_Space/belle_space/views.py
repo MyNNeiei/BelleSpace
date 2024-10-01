@@ -4,6 +4,9 @@ from .models import *
 from django.http import JsonResponse
 from .forms import AppointmentForm
 from django.contrib import messages
+from .forms import *
+from django.contrib.auth import logout, login
+from django.contrib.auth.forms import AuthenticationForm
 # Create your views here.
 class IndexView(View):
     def get(self, request):
@@ -63,63 +66,43 @@ class AppointmentView(View):
 #             return render(request, "index.html",context)
 
 #         return render(request, "index.html", context)
-        
-    
+class LoginFormView(View):
+    def get(self, request):
+        form = AuthenticationForm()
+        return render(request, "login/login_form.html" , {"form": form})
+    def post(self, request):
+        form = AuthenticationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request,user)
+            return redirect('login_form.html')
+        return render(request, "login/register_form.html", {"form": form})        
+class Logout(View):
+    def get(self, request):
+        logout(request)
+        return redirect('login_form')
+
 class RegisterFormView(View):
     def get(self, request):
-        return render(request, "login.html")
-
-
-
-class AppointmentFormView(View):
-    def get(self, request):
-        form = AppointmentForm()
-        staff_list = Staff.objects.all()
-        categories = Categories.objects.all()
-        services = Service.objects.all().select_related('category')
-        
-        # Group services by category
-        services_by_category = {}
-        for service in services:
-            if service.category.id not in services_by_category:
-                services_by_category[service.category.id] = []
-            services_by_category[service.category.id].append(service)
-
+        form = UserRegisterForm()
+        formdetail = UserdetailRegisterForm()
         context = {
-            "form": form,
-            "staff_list": staff_list,
-            "categories": categories,
-            "services_by_category": services_by_category,
+            "userform": form,
+            "formdetail": formdetail
         }
-        return render(request, "appointment_form.html", context)
 
+        return render(request, "login/register_form.html" , context)
     def post(self, request):
-        form = AppointmentForm(request.POST)
+        form = UserRegisterForm(request.POST)
+
         if form.is_valid():
-            appointment = form.save(commit=False)
-            appointment.user = request.user  # Assuming user is logged in
-            appointment.save()
-            form.save_m2m()  # Save many-to-many relationships
-            return redirect('appointment_success')
-        
-        # If form is not valid, re-render the form with errors
-        staff_list = Staff.objects.all()
-        categories = Categories.objects.all()
-        services = Service.objects.all().select_related('category')
-        services_by_category = {}
-        for service in services:
-            if service.category.id not in services_by_category:
-                services_by_category[service.category.id] = []
-            services_by_category[service.category.id].append(service)
+            user = form.save()
 
-        context = {
-            "form": form,
-            "staff_list": staff_list,
-            "categories": categories,
-            "services_by_category": services_by_category,
-        }
-        return render(request, "appointment_form.html", context)
-
-def appointment_success(request):
-    return render(request, "appointment_success.html")
-
+            UsersDetail.objects.create(
+                user = user,
+                phone_number = form.cleaned_data['phone_number'],
+                birth_date = form.cleaned_data['birth_date'],
+                gender = form.cleaned_data['gender']
+            )
+            return redirect('login_form.html')
+        return render(request, "register_form.html", {"form": form})
