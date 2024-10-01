@@ -31,7 +31,7 @@ class UsersDetail(models.Model):
 class Staff(models.Model):
     user = models.OneToOneField(User, on_delete=models.SET_NULL, null=True, blank=True)
     position = models.CharField(max_length=255, null=True)
-    available_time = models.DateField()
+    available_time = models.DateTimeField()
 
 
 class Appointment(models.Model):

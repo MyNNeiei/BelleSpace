@@ -19,7 +19,8 @@
 <body>
     <div class="form">
         <form action="post">
-            {{form}}
+            {% csrf_token %}
+            {{ form }}
         <div class="flex justify-start items-center">
             <button type="submit">Submit</button>
             <div class="flex justify-end flex-row">
