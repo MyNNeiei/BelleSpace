@@ -1,33 +1,41 @@
 {% load static %}
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <!-- font metal -->
+     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Metal&display=swap" rel="stylesheet">
 </head>
-</head>
-<body>
-    <div class="form">
-        <form action="post" class="flex justify-center items-center flex-col">
+<body class="content">
+    <div class="form bg-[#74342B] h-screen w-full flex justify-center items-center flex-col">
+        <h1 class="text-3xl text-white m-5">Login Forms</h1>
+        {{ form.non_field_errors }}
+        <form method="post" action="{% url 'login_form' %}" class="flex justify-center items-center flex-col space-y-4 bg-white p-8 rounded-lg shadow-md">
             {% csrf_token %}
-            {{ form }}
-        <div class="flex justify-start items-center">
-            <button type="submit">Submit</button>
-            <div class="flex justify-end flex-row gap-8">
-                <p>หากไม่มี Account</p>
-                <a href="{% url 'register_form' %}">Sign in</a>
+            <div class="flex flex-col">
+                <label for="">Username</label>
+                <input class="border border-gray-300 rounded px-3 py-2 w-full" type="text" name="username" 
+                     id="{{form.username.id_for_label}}" placeholder="Username">
+
+                <label for="">Password</label>
+                <input class="border border-gray-300 rounded px-3 py-2 w-full" type="password" name="password" 
+                     id="{{form.password.id_for_label}}" placeholder="Password">
             </div>
-        </div>
+            <div class="flex justify-start items-center w-full">
+                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Submit</button>
+            </div>
+            <div class="flex justify-end flex-row gap-8 w-full">
+                <p>หากไม่มี Account</p>
+                <a href="{% url 'register_form' %}" class="text-[#74342B] hover:underline">Sign in</a>
+            </div>
         </form>
     </div>
 </body>
