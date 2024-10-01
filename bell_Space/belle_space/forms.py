@@ -22,7 +22,8 @@ class UserdetailRegisterForm(forms.ModelForm):
         fields = [
             'gender',
             'phone_number',
-            'birth_date'
+            'birth_date',
+            'image_profile'
         ]
     def clean_birthdate(self):
         cleaned_data = super().clean()

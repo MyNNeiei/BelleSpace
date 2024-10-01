@@ -40,11 +40,11 @@ class Appointment(models.Model):
         CANCELLED = "Cancelled", "Cancelled"
         COMPLETED = "Completed", "Completed"
     
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)  # Linking with the built-in User model
+    user_id = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)  # Linking with the built-in User model
     category = models.ForeignKey("Categories", on_delete=models.SET_NULL, null=True, blank=True)
     appointment_date = models.DateTimeField()
     status = models.CharField(max_length=10, choices=Status.choices, default=Status.PENDING)
-    staff = models.ManyToManyField("Staff")
+    staff_id = models.ManyToManyField("Staff")
 
 
 class Service(models.Model):

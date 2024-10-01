@@ -4,7 +4,7 @@ from .models import *
 from django.http import JsonResponse
 from .forms import *
 from django.contrib.auth import logout, login
-from django.contrib.auth.forms import *
+from django.contrib.auth.forms import AuthenticationForm
 # Create your views here.
 class IndexView(View):
     def get(self, request):
@@ -75,7 +75,11 @@ class LoginFormView(View):
             login(request,user)
             return redirect('login_form.html')
         return render(request, "login/register_form.html", {"form": form})        
-    
+class Logout(View):
+    def get(self, request):
+        logout(request)
+        return redirect('login_form')
+
 class RegisterFormView(View):
     def get(self, request):
         form = UserRegisterForm()
@@ -95,7 +99,8 @@ class RegisterFormView(View):
             UsersDetail.objects.create(
                 user = user,
                 phone_number = form.cleaned_data['phone_number'],
-                birth_date = form.cleaned_data['birth_date']
+                birth_date = form.cleaned_data['birth_date'],
+                gender = form.cleaned_data['gender']
             )
             return redirect('login_form.html')
         return render(request, "register_form.html", {"form": form})

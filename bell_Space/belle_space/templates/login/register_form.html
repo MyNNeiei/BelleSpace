@@ -14,11 +14,46 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Metal&display=swap" rel="stylesheet">
 </head>
-</head>
 <body>
     <div>
         <form method="post">
-            
+            {% csrf_token %}
+            <div class="form-group">
+                <div>
+                    <label for="{{ userform.username.id_for_label }}">Username</label>
+                    {{ userform.username }}
+                </div>
+                <div>
+                    <label for="{{ userform.password.id_for_label }}">Password</label>
+                    {{ userform.password }}
+                </div>
+                <div>
+                    <label for="{{ userform.first_name.id_for_label }}">First Name</label>
+                    {{ userform.first_name }}
+                </div>
+                <div>
+                    <label for="{{ userform.last_name.id_for_label }}">Last Name</label>
+                    {{ userform.last_name }}
+                </div>
+                <div>
+                    <label for="{{ userform.email.id_for_label }}">Email</label>
+                    {{ userform.email }}
+                </div>
+                <div>
+                    <div class="mb-4">
+                        <label for="{{ formdetail.gender.id_for_label }}" class="block text-sm font-medium">Gender</label>
+                        {{ formdetail.gender }}
+                </div>
+                <div>
+                    <label for="{{ formdetail.phone_number.id_for_label }}">Phone Number</label>
+                    {{ formdetail.phone_number }}
+                </div>
+                <div>
+                    <label for="{{ formdetail.birth_date.id_for_label }}">Birth Date</label>
+                    {{ formdetail.birth_date }}
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Register</button>
         </form>
     </div>
 </body>
