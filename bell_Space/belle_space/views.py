@@ -2,7 +2,9 @@ from django.shortcuts import render, redirect
 from django.views import View
 from .models import *
 from django.http import JsonResponse
-from .forms import AppointmentForm
+from .forms import *
+from django.contrib.auth import logout, login
+from django.contrib.auth.forms import AuthenticationForm
 # Create your views here.
 class IndexView(View):
     def get(self, request):
@@ -62,8 +64,43 @@ class AppointmentView(View):
 #             return render(request, "index.html",context)
 
 #         return render(request, "index.html", context)
-        
-    
+class LoginFormView(View):
+    def get(self, request):
+        form = AuthenticationForm()
+        return render(request, "login/login_form.html" , {"form": form})
+    def post(self, request):
+        form = AuthenticationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request,user)
+            return redirect('login_form.html')
+        return render(request, "login/register_form.html", {"form": form})        
+class Logout(View):
+    def get(self, request):
+        logout(request)
+        return redirect('login_form')
+
 class RegisterFormView(View):
     def get(self, request):
-        return render(request, "login.html")
+        form = UserRegisterForm()
+        formdetail = UserdetailRegisterForm()
+        context = {
+            "userform": form,
+            "formdetail": formdetail
+        }
+
+        return render(request, "login/register_form.html" , context)
+    def post(self, request):
+        form = UserRegisterForm(request.POST)
+
+        if form.is_valid():
+            user = form.save()
+
+            UsersDetail.objects.create(
+                user = user,
+                phone_number = form.cleaned_data['phone_number'],
+                birth_date = form.cleaned_data['birth_date'],
+                gender = form.cleaned_data['gender']
+            )
+            return redirect('login_form.html')
+        return render(request, "register_form.html", {"form": form})

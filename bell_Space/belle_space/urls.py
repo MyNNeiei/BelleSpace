@@ -3,6 +3,8 @@ from . import views
 urlpatterns = [
     # ex: /polls/
     path("", views.IndexView.as_view(), name="home"),
+    path("register/", views.RegisterFormView.as_view(), name="register_form"),
+    path("login/", views.LoginFormView.as_view(), name="login_form"),
     path("appointment/", views.AppointmentView.as_view(), name="appointment"),
     path("appointment/appointment_form/", views.AppointmentFormView.as_view(), name="appointment_form"),
 ]

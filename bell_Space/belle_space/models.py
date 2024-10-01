@@ -12,10 +12,18 @@ from django.contrib.auth.models import User
 #     def get_full_name(self):
 #         return f"{self.first_name} {self.last_name}"
 class UsersDetail(models.Model):
-    user = models.OneToOneField(User, on_delete=models.PROTECT)
+    class Gender(models.Choices):
+        M = "Male"
+        F = "Female"
+        LGBTQ = "LGBTQ+"
+        O = "Other"
     
+    user = models.OneToOneField(User, on_delete=models.PROTECT)
+    birth_date = models.DateTimeField()
     phone_number = models.CharField(max_length=10, null=True)
-
+    gender = models.CharField(max_length=10, choices=Gender.choices)
+    image_profile = models.ImageField(upload_to='profile_pic')
+    
     def get_full_name(self):
         return f"{self.user.first_name} {self.user.last_name}"
 
@@ -23,7 +31,7 @@ class UsersDetail(models.Model):
 class Staff(models.Model):
     user = models.OneToOneField(User, on_delete=models.SET_NULL, null=True, blank=True)
     position = models.CharField(max_length=255, null=True)
-    available_time = models.DateField()
+    available_time = models.DateTimeField()
 
 
 class Appointment(models.Model):
@@ -32,11 +40,11 @@ class Appointment(models.Model):
         CANCELLED = "Cancelled", "Cancelled"
         COMPLETED = "Completed", "Completed"
     
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)  # Linking with the built-in User model
-    service = models.ForeignKey("Service", on_delete=models.SET_NULL, null=True, blank=True)
+    user_id = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)  # Linking with the built-in User model
+    category = models.ForeignKey("Categories", on_delete=models.SET_NULL, null=True, blank=True)
     appointment_date = models.DateTimeField()
     status = models.CharField(max_length=10, choices=Status.choices, default=Status.PENDING)
-    staff = models.ManyToManyField("Staff")
+    staff_id = models.ManyToManyField("Staff")
 
 
 class Service(models.Model):
