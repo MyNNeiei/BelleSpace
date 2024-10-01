@@ -74,7 +74,7 @@ class AppointmentForm(ModelForm):
             "first_name",
             "last_name",
             "category", 
-            "staff",
+            "staff_id",
             "appointment_date",
         ]
         # model = User
