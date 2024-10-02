@@ -126,7 +126,7 @@ class AppointmentView(View):
         # Annotate services for each appointment
         for appointment in appointments:
             appointment.services = Service.objects.filter(category=appointment.category)
-            print(appointment.fullname)
+
         appointment_num = appointments.count()
         context = {
             "num": appointment_num,
