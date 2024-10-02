@@ -7,6 +7,7 @@ from .models import *
 from django.contrib.auth.forms import UserCreationForm
 
         
+from django.utils import timezone
 class UserRegisterForm(UserCreationForm):
     class Meta:
         model = User
@@ -76,40 +77,53 @@ class UserdetailRegisterForm(forms.ModelForm):
 #             )
 #         return cleaned_data
 
-class AppointmentForm(ModelForm):
-    first_name = forms.CharField(max_length=255)
-    last_name = forms.CharField(max_length=255)
-    service_name = forms.CheckboxSelectMultiple()
+# อันนี้เด็ด
+class AppointmentForm(forms.ModelForm):
+    services = forms.ModelMultipleChoiceField(
+        queryset=Service.objects.all(),
+        widget=forms.CheckboxSelectMultiple,
+        required=True
+    )
+    staff_id = forms.ModelChoiceField(
+        queryset=Staff.objects.all(),
+        required=True
+    )
     class Meta:
         model = Appointment
-        fields = [
-            "first_name",
-            "last_name",
-            "category", 
-            "staff_id",
-            "appointment_date",
-        ]
-        # model = User
-        # fields = [
-        #     "first_name",
-        #     "last_name",
+        fields = ['staff_id', 
+                'category',
+                'services', 
+                'appointment_date',
 
-        # ]
+                ]
+        labels = {
+            'staff_id': 'พนักงาน',
+            'category': 'หมวดหมู่',
+            'services': 'บริการ',
+            'appointment_date': 'วันที่นัดหมาย',
 
+        }
         widgets = {
-            "appointment_date" : DateInput(attrs={"type": "date"}),
-            }
-    
-    def clean(self):   
+            'staff_id': forms.Select(attrs={
+                'class': 'form-select mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm'
+            }),
+            'appointment_date': DateInput(attrs={
+                'type': 'date',
+                'class': 'p-2 rounded-md'
+            }),
+            
+            'category': forms.Select(attrs={
+                'class': 'form-select mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm'
+            }),
+            
+        }
+
+    def clean(self):
         cleaned_data = super().clean()
+        app_date = cleaned_data.get('appointment_date')
+        now = timezone.now()
 
-        # service = cleaned_data.get("service")
-        # staff = cleaned_data.get("staff")
-
-        appointment_date = cleaned_data.get("appointment_date")
-        appointment_date = datetime.now().date()
-        if appointment_date < appointment_date:
-            raise ValidationError(
-                    "จองย้อนไม่ได้จ้า"
-            )
-        return cleaned_data 
+        if app_date and app_date < now:
+            raise ValidationError("จองย้อนไม่ได้จ้า")
+        
+        return cleaned_data

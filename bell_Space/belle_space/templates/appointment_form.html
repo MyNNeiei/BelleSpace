@@ -1,23 +1,25 @@
-{% extends "layout.html" %}
+{% extends 'layout.html' %}
+{% load static %}
 
-{% block title %} จองบริการ {% endblock %}
-
-{% block head %}
-<h1 class="text-xl font-bold text-center mt-4">จองบริการ</h1>
-{% endblock %}
+{% block title %}จองบริการ{% endblock %}
 
 {% block content %}
-<div class="bg-[#74342B] h-screen w-full flex justify-center items-center">
-    <form method="post" class="bg-[#f8e9d2] px-16 py-24 rounded-xl shadow-md w-100 gap-12;">
-        {% csrf_token %}
-        <div class="mb-4">
-            {{ form.as_p }}
-        </div>
-        <div class="flex justify-center">
-            <button type="submit" class="bg-[#D18F90] text-[#74342B] text-2xl font-bold px-6 py-5 rounded-lg hover:bg-gray-800">
-                ยืนยันการจอง
-            </button>
-        </div>
-    </form>
+<div class="bg-[#74342B] min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+
+    <div class="max-w-md w-full space-y-8 bg-[#EDDCC2] p-6 rounded-lg shadow-md">
+
+        <h2 class="mt-6 text-center text-3xl font-extrabold text-[#74342B]">จองบริการ</h2>
+
+        <form class="mt-8 space-y-6" id="appointmentForm" method="post">
+            {% csrf_token %}
+
+            {{form}}
+                <button type="submit"
+                    class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-[#74342B] hover:bg-[#74342B]">
+                    จองคิว
+                </button>
+        </form>
+    </div>
 </div>
+
 {% endblock %}
