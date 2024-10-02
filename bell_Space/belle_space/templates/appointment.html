@@ -1,33 +1,54 @@
 {% extends 'layout.html' %}
-{%  block page_title %}All Appointment{% endblock %}
+{% load humanize %}
 
-{%  block header %}appoject{% endblock %}
-{%  block content %}
+{% block page_title %}การจองทั้งหมด{% endblock %}
 
-<div class="itemGroup">
-        <div>
-            <br>
-            <!-- กำหนด path ไปยังหน้า form สร้าง project -->
-            <a href="{% url 'appointment_form' %}"><button class="newappo">Make an Appointment</button></a>
-        </div>
-        {% for appo in appointment %}
-            <div class="item">
-                    <!-- โปรเจค id และ ชื่อ -->
-                    <div>{{appo.id}} . {{appo.service}}</div>
+{% block header %}
+การจองทั้งหมด 
+Total {{num}} Appointments
+{% endblock %}
 
-                    <!-- วันเริ่ม และ วันกำหนดส่งโปรเจค -->
-                    <div>{{appo.a_date}}</div>
-
-                    <div>{{appo.staff}}</div>
-                    <div class="action">
-                        <!-- กำหนด path ให้ถูกต้อง -->
-                        <!-- <a href="{% url 'appointment' appo.id %}" class="edit btn">แก้ไข</a> -->
-                        
-                        <!-- ถ้า code มันแจ้งเตือนอะไรก็ปล่อยไปนะครับไม่มีผลอะไร  -->
-                        <!-- <button type="submit" onclick="deleteAppointment('{{appo.id}}','{{csrf_token}}')" class="delete">Delete</button> -->
-                    </div>
-                
-            </div>
-        {% endfor %}
-        </div>
+{% block content %}
+<div class="overflow-x-auto pt-24 bg-[#D18F90] h-screen">
+    <table class="w-3/4  mx-auto">
+        <thead class="bg-[#74342B] text-[#EDDCC2]">
+            <tr>
+                <th class="py-2 px-4 border-b">ID</th>
+                <th class="py-2 px-4 border-b">Full Name</th>
+                <th class="py-2 px-4 border-b">Position</th>
+                <th class="py-2 px-4 border-b">Appointment Date</th>
+                <th class="py-2 px-4 border-b">Category</th>
+                <th class="py-2 px-4 border-b">Services</th>
+                <th class="py-2 px-4 border-b">Staff</th>
+                <th class="py-2 px-4 border-b">Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for appointment in appointments %}
+            <tr class="{% cycle 'bg-[#EDDCC2]' 'bg-[#FFF1DC]' %}">
+                <td class="py-2 px-4 border-b">{{ appointment.id }}</td>
+                <td class="py-2 px-4 border-b">{{ appointment.fullname }}</td>
+                <td class="py-2 px-4 border-b">{{ appointment.position }}</td>
+                <td class="py-2 px-4 border-b">{{ appointment.appointment_date|date:"d / m / Y" }}</td>
+                <td class="py-2 px-4 border-b">{{ appointment.category.name }}</td>
+                <td class="py-2 px-4 border-b">
+                    {% for service in appointment.services %}
+                        {{ service.name }}{% if not forloop.last %}, {% endif %}
+                    {% endfor %}
+                </td>
+                <td class="py-2 px-4 border-b">
+                    {% for staff in appointment.staff_id.all %}
+                        {{ staff.position }}{% if not forloop.last %}, {% endif %}
+                    {% endfor %}
+                </td>
+                <td class="py-2 px-4 border-b">{{ appointment.get_status_display }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="7" class="py-4 px-4 text-center">No appointments found</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 {% endblock %}
