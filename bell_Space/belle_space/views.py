@@ -11,25 +11,24 @@ from django.contrib.auth.forms import AuthenticationForm
 # Create your views here.
 class IndexView(View):
     def get(self, request):
-        user = User.objects.all()
-        context = {"user" : user,}
-        return render(request, "index.html", context)
+        return render(request, "index.html")
     
 class LoginFormView(View):
     def get(self, request):
         form = AuthenticationForm()
         return render(request, "login/login_form.html" , {"form": form})
     def post(self, request):
-        form = AuthenticationForm(request.POST)
+        form = AuthenticationForm(data=request.POST)
         if form.is_valid():
-            user = form.save()
-            login(request,user)
-            return redirect('login_form.html')
-        return render(request, "login/register_form.html", {"form": form})        
+            user = form.get_user()
+            login(request, user)
+            return redirect('home')# Redirect to home after successful login
+        print(form.errors)
+        return render(request, "login/login_form.html", {"form": form})        
 class Logout(View):
     def get(self, request):
         logout(request)
-        return redirect('login_form')
+        return redirect('home')
 
 class RegisterFormView(View):
     def get(self, request):
@@ -42,6 +41,28 @@ class RegisterFormView(View):
 
         return render(request, "login/register_form.html" , context)
     def post(self, request):
+        userform = UserRegisterForm(request.POST)
+        userdetailform = UserdetailRegisterForm(request.POST)
+        if userform.is_valid() and userdetailform.is_valid():
+            # มัน return เป็น user ogject
+            user = userform.save()
+            userdetil = UsersDetail.objects.create(user_id=user,
+                                                    gender=userdetailform.cleaned_data['gender'],
+                                                   phone_number=userdetailform.cleaned_data['phone_number'],
+                                                   birth_date=userdetailform.cleaned_data['birth_date']
+                                                  )
+            # group customer
+            # group = Group.objects.get(name='customer')
+            # user.groups.add(group)
+            user.save()
+            login(request,user)
+            return redirect('home')
+        context = {"userform": userform, "userdetailform": userdetailform}
+        return render(request, 'login/register_form.html', context)
+    
+class ProfileView(View):
+    def get(self, request):
+        return render(request, "index.html")
         form = UserRegisterForm(request.POST)
 
         if form.is_valid():
