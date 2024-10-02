@@ -32,8 +32,9 @@ class Staff(models.Model):
     user = models.OneToOneField(User, on_delete=models.SET_NULL, null=True, blank=True)
     position = models.CharField(max_length=255, null=True)
     available_time = models.DateTimeField()
-
-
+    def __str__(self):
+        return self.position 
+    
 class Appointment(models.Model):
     class Status(models.TextChoices):
         PENDING = "Pending", "Pending"
@@ -51,7 +52,11 @@ class Service(models.Model):
     category = models.ForeignKey("Categories", on_delete=models.SET_NULL, null=True, blank=True)
     name = models.CharField(max_length=255, null=True)
     description = models.CharField(max_length=255, null=True)
+    def __str__(self):
+        return self.name
 
 
 class Categories(models.Model):
     name = models.CharField(max_length=255, null=True)
+    def __str__(self):
+        return self.name

@@ -71,11 +71,38 @@ class AppointmentForm(forms.ModelForm):
         widget=forms.CheckboxSelectMultiple,
         required=True
     )
+    staff_id = forms.ModelChoiceField(
+        queryset=Staff.objects.all(),
+        required=True
+    )
     class Meta:
         model = Appointment
-        fields = ['staff', 'services', 'appointment_date']
+        fields = ['staff_id', 
+                'category',
+                'services', 
+                'appointment_date',
+
+                ]
+        labels = {
+            'staff_id': 'พนักงาน',
+            'category': 'หมวดหมู่',
+            'services': 'บริการ',
+            'appointment_date': 'วันที่นัดหมาย',
+
+        }
         widgets = {
-            'appointment_date': forms.DateInput(attrs={'type': 'date'}),
+            'staff_id': forms.Select(attrs={
+                'class': 'form-select mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm'
+            }),
+            'appointment_date': DateInput(attrs={
+                'type': 'date',
+                'class': 'p-2 rounded-md'
+            }),
+            
+            'category': forms.Select(attrs={
+                'class': 'form-select mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm'
+            }),
+            
         }
 
     def clean(self):

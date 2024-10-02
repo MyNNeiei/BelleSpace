@@ -1,8 +1,9 @@
 from django.shortcuts import render, redirect
 from django.views import View
+from django.db.models.functions import Concat
+from django.db.models import Value,F,Count
 from .models import *
 from django.http import JsonResponse
-from .forms import AppointmentForm
 from django.contrib import messages
 from .forms import *
 from django.contrib.auth import logout, login
@@ -14,58 +15,6 @@ class IndexView(View):
         context = {"user" : user,}
         return render(request, "index.html", context)
     
-# class AppointmentFormView(View):
-#     def get(self, request):
-#         form = AppointmentForm()
-#         return render(request, "appointment_form.html", {"form": form})
-#     def post(self, request):
-#         form = AppointmentForm(request.POST)
-#         if form.is_valid():
-#             form.save()
-#             return redirect('appoint')
-#         return render(request, "appointment_form.html", {"form": form})
-
-    
-class AppointmentView(View):
-    def get(self, request):
-        project = Appointment.objects.all()
-        context = {"project" : project}
-        return render(request, "project.html", context)
-    
-    def delete(self, request,dele):
-        pro_id = Appointment.objects.get(id=dele)
-        pro_id.delete()
-        return JsonResponse({'status': 'ok'})
-    
-# class AppointmentDetailView(View):
-#     def get(self, request, detail):
-#         appointment = Appointment.objects.get(pk=detail)
-#         form = AppointmentForm(instance=appointment)
-#         # all_project = project_detail.staff.all()
-#         adate = appointment.appointment_date.strftime("%Y-%m-%d")
-
-#         context = { "form" : form,
-#                     "appointment": appointment,
-#                     "adate" : adate,}
-#                     # "all_project" : all_project}
-#         return render(request, "index.html", context)
-    
-#     def post(self, request, detail):
-#         # for updating article instance set instance=article
-#         appointment = Appointment.objects.get(pk=detail)
-#         form = AppointmentForm(request.POST, instance= appointment)
-#         # all_project = project_detail.staff.all()
-#         adate = appointment.appointment_date.strftime("%Y-%m-%d")
-#         context = { "form" : form,
-#                     "appointment": appointment,
-#                     "adate" : adate,}
-#                     # "all_project" : all_project}
-#         # save if valid                                       
-#         if form.is_valid():                                                                      
-#             form.save()                                                                          
-#             return render(request, "index.html",context)
-
-#         return render(request, "index.html", context)
 class LoginFormView(View):
     def get(self, request):
         form = AuthenticationForm()
@@ -106,3 +55,81 @@ class RegisterFormView(View):
             )
             return redirect('login_form.html')
         return render(request, "register_form.html", {"form": form})
+    
+class AppointmentFormView(View):
+    def get(self, request):
+        form = AppointmentForm()
+        staff_list = Staff.objects.all()
+        categories = Categories.objects.all()
+        services = Service.objects.all().select_related('category')
+        
+        # Group services by category
+        services_by_category = {}
+        for service in services:
+            if service.category.id not in services_by_category:
+                services_by_category[service.category.id] = []
+            services_by_category[service.category.id].append(service)
+
+        context = {
+            "form": form,
+            "staff_list": staff_list,
+            "categories": categories,
+            "services_by_category": services_by_category,
+        }
+        return render(request, "appointment_form.html", context)
+
+    def post(self, request):
+        form = AppointmentForm(request.POST)
+
+        if form.is_valid():
+            appointment = form.save(commit=False)
+
+            # appointment.user = request.user # Assuming user is logged in
+            appointment.user = 2 
+            appointment.save()
+            return redirect('appointment')
+
+        staff_list = Staff.objects.all()
+        categories = Categories.objects.all()
+        services = Service.objects.all().select_related('category')
+        services_by_category = {}
+        for service in services:
+            if service.category.id not in services_by_category:
+                services_by_category[service.category.id] = []
+            services_by_category[service.category.id].append(service)
+
+        context = {
+            "form": form,
+            "staff_list": staff_list,
+            "categories": categories,
+            "services_by_category": services_by_category,
+        }
+        return render(request, "appointment_form.html", context)
+
+    def appointment_success(request):
+        return render(request, "index.html")
+
+# class AppointmentView(View):
+#     def get(self, request):
+#         user_fullname = User.objects.annotate(fullname = Concat(F('first_name'),Value(' '),F('last_name')))
+#         appoint_num = user_fullname.count()
+#         context = {"num" : appoint_num,
+#                     "fullname" : user_fullname}
+#         return render(request, "appointment.html", context)
+    
+class AppointmentView(View):
+    def get(self, request):
+        appointments = Appointment.objects.annotate(
+            fullname=Concat(F('user_id__first_name'), Value(' '), F('user_id__last_name'))
+        ).order_by('-appointment_date')
+
+        # Annotate services for each appointment
+        for appointment in appointments:
+            appointment.services = Service.objects.filter(category=appointment.category)
+            print(appointment.fullname)
+        appointment_num = appointments.count()
+        context = {
+            "num": appointment_num,
+            "appointments": appointments
+        }
+        return render(request, "appointment.html", context)

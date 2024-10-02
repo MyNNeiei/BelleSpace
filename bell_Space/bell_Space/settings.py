@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.humanize',
     'belle_space'
 ]
 PASSWORD_HASHERS = [
@@ -90,7 +91,7 @@ DATABASES = {
         "ENGINE": "django.db.backends.postgresql",
         "NAME": "BelleSpace",
         "USER": "postgres",
-        "PASSWORD": "mR5dfselnk",
+        "PASSWORD": "password",
         "HOST": "localhost",
         "PORT": "5432",
     }
