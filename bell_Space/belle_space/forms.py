@@ -119,44 +119,41 @@ class UserRegisterForm(UserCreationForm):
 #             )
 #         return cleaned_data
 
-# อันนี้เด็ด
+
 class AppointmentForm(forms.ModelForm):
+    # staff_id = forms.ModelChoiceField(
+    #     queryset=Staff.objects.all(),
+    #     required=True,
+    #     label='พนักงาน'
+    # )
     services = forms.ModelMultipleChoiceField(
         queryset=Service.objects.all(),
-        widget=forms.CheckboxSelectMultiple,
-        required=True
+        widget=forms.CheckboxSelectMultiple(attrs={
+            'class': 'text-[#74342B] text-xl rounded scale-[1.2] my-3 ml-5', 
+        }),
+        required=True,
+        label='บริการ',
     )
-    staff_id = forms.ModelChoiceField(
-        queryset=Staff.objects.all(),
-        required=True
-    )
+
     class Meta:
         model = Appointment
-        fields = ['staff_id', 
-                'category',
+        fields = [
                 'services', 
                 'appointment_date',
 
                 ]
         labels = {
-            'staff_id': 'พนักงาน',
-            'category': 'หมวดหมู่',
-            'services': 'บริการ',
             'appointment_date': 'วันที่นัดหมาย',
+        
 
         }
         widgets = {
-            'staff_id': forms.Select(attrs={
-                'class': 'form-select mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm'
-            }),
             'appointment_date': DateInput(attrs={
                 'type': 'date',
-                'class': 'p-2 rounded-md'
+                'class': 'p-2 rounded-md scale-[1.2] ml-6 text-xl'
+                
             }),
-            
-            'category': forms.Select(attrs={
-                'class': 'form-select mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm'
-            }),
+        
             
         }
 
@@ -168,4 +165,16 @@ class AppointmentForm(forms.ModelForm):
         if app_date and app_date < now:
             raise ValidationError("จองย้อนไม่ได้จ้า")
         
+        return cleaned_data
+    
+class AppointmentDetailForm(ModelForm):
+    class Meta:
+        model = Appointment
+        fields = [
+            "staff_id"
+        ]  
+    def clean(self):
+        cleaned_data = super().clean()
+
+        staff = cleaned_data.get("staff_id")
         return cleaned_data
