@@ -52,8 +52,6 @@ class RegisterFormView(View):
 
             login(request, user)
             return redirect('login_form')
-        else:
-            print(555)
         # If forms are invalid, re-render the form with errors
         return render(request, 'index.html', {"form": form})
     
@@ -100,53 +98,71 @@ class AppointmentFormView(View):
 
         if form.is_valid():
             appointment = form.save(commit=False)
-
-            # appointment.user = request.user # Assuming user is logged in
-            appointment.user = 2 
+            appointment.user_id = request.user # Assuming user is logged in
             appointment.save()
+
             return redirect('appointment')
 
-        staff_list = Staff.objects.all()
-        categories = Categories.objects.all()
-        services = Service.objects.all().select_related('category')
-        services_by_category = {}
-        for service in services:
-            if service.category.id not in services_by_category:
-                services_by_category[service.category.id] = []
-            services_by_category[service.category.id].append(service)
 
-        context = {
-            "form": form,
-            "staff_list": staff_list,
-            "categories": categories,
-            "services_by_category": services_by_category,
-        }
-        return render(request, "appointment_form.html", context)
 
     def appointment_success(request):
         return render(request, "index.html")
 
-# class AppointmentView(View):
-#     def get(self, request):
-#         user_fullname = User.objects.annotate(fullname = Concat(F('first_name'),Value(' '),F('last_name')))
-#         appoint_num = user_fullname.count()
-#         context = {"num" : appoint_num,
-#                     "fullname" : user_fullname}
-#         return render(request, "appointment.html", context)
+
     
 class AppointmentView(View):
     def get(self, request):
         appointments = Appointment.objects.annotate(
             fullname=Concat(F('user_id__first_name'), Value(' '), F('user_id__last_name'))
-        ).order_by('-appointment_date')
-
+        ).order_by('appointment_date')
         # Annotate services for each appointment
         for appointment in appointments:
             appointment.services = Service.objects.filter(category=appointment.category)
-            print(appointment.fullname)
+
         appointment_num = appointments.count()
         context = {
             "num": appointment_num,
             "appointments": appointments
         }
         return render(request, "appointment.html", context)
+        
+    def delete(self, request,id):
+        app_id = Appointment.objects.get(pk=id)
+        app_id.delete()
+        return JsonResponse({'status': 'ok'})
+
+class AppointmentDetailView(View):
+    def get(self, request, detail):
+        appointment_detail = Appointment.objects.get(pk=detail)
+        form = AppointmentDetailForm(instance=appointment_detail)
+        all_appointment = appointment_detail.staff_id.all()
+
+        context = { "form" : form,
+                    "appointment_detail":appointment_detail,
+                    "all_appointment" : all_appointment}
+        return render(request, "appointment_detail.html", context)
+    
+    def post(self, request, detail):
+        # for updating article instance set instance=article
+        appointment_detail = Appointment.objects.get(pk=detail)
+        form = AppointmentDetailForm(request.POST, instance=appointment_detail)
+        all_appointment = appointment_detail.staff_id.all()
+
+        context = { "form" : form,
+                    "appointment_detail": appointment_detail,
+                    "all_appointment" : all_appointment}
+                    
+        # save if valid                                       
+        if form.is_valid():                                                                      
+            form.save()                                                                          
+            return redirect('appointment')
+
+        return render(request, "appointment_detail.html", context)
+    
+    def put(self, request, appointment_id, staff_id):
+        appointment = Appointment.objects.get(id=appointment_id)
+        staff = Staff.objects.get(id=staff_id)
+        if staff not in appointment.staff_id.all():
+            appointment.staff_id.add(staff)
+            return redirect('appointment')
+        return JsonResponse({'status': 'ok'})
