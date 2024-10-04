@@ -18,42 +18,10 @@
     <div class="content bg-[#74342B] min-h-screen flex items-center justify-center">
         <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
             <h2 class="text-2xl font-bold mb-6 text-center text-gray-800">Register</h2>
-            <form method="post">
+            <form method="post" action="{% url 'register_form' %}">
                 {% csrf_token %}
-                <div class="form-group">
-                    <div>
-                        <label for="{{ userform.username.id_for_label }}">Username</label>
-                        {{ userform.username }}
-                    </div>
-                    <div>
-                        <label for="{{ userform.password.id_for_label }}">Password</label>
-                        {{ userform.password }}
-                    </div>
-                    <div>
-                        <label for="{{ userform.first_name.id_for_label }}">First Name</label>
-                        {{ userform.first_name }}
-                    </div>
-                    <div>
-                        <label for="{{ userform.last_name.id_for_label }}">Last Name</label>
-                        {{ userform.last_name }}
-                    </div>
-                    <div>
-                        <label for="{{ userform.email.id_for_label }}">Email</label>
-                        {{ userform.email }}
-                    </div>
-                    <div>
-                        <div class="mb-4">
-                            <label for="{{ formdetail.gender.id_for_label }}" class="block text-sm font-medium">Gender</label>
-                            {{ formdetail.gender }}
-                    </div>
-                    <div>
-                        <label for="{{ formdetail.phone_number.id_for_label }}">Phone Number</label>
-                        {{ formdetail.phone_number }}
-                    </div>
-                    <div>
-                        <label for="{{ formdetail.birth_date.id_for_label }}">Birth Date</label>
-                        {{ formdetail.birth_date }}
-                    </div>
+                <div>
+                    {{ form }}
                 </div>
                 <button type="submit" class="transition ease-in-out delay-150 w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-[#74342B] bg-[#D18F90] hover:border-[#74342B] hover:bg-white hover:text-[#2f2f2f]  focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Register</button>
             </form>
