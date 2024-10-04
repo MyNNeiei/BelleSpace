@@ -33,7 +33,7 @@ class Staff(models.Model):
     position = models.CharField(max_length=255, null=True)
     available_time = models.DateTimeField()
     def __str__(self):
-        return self.position 
+        return f"{self.user.first_name} {self.user.last_name}"
     
 class Appointment(models.Model):
     class Status(models.TextChoices):

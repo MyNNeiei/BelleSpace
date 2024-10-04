@@ -1,14 +1,14 @@
 {% extends 'layout.html' %}
 {% load static %}
 
-{% block title %}จองบริการ{% endblock %}
+{% block title %}รายละเอียดการจอง{% endblock %}
 
 {% block content %}
 <div class="bg-[#D18F90]  min-h-screen flex items-center justify-center py-12 px-10 sm:px-6 lg:px-8">
 
     <div class="max-w-md w-full space-y-8 bg-[#EDDCC2] p-6 rounded-lg shadow-md">
 
-        <h2 class="mt-6 text-center text-5xl font-extrabold text-[#74342B]">จองบริการ</h2>
+        <h2 class="mt-6 text-center text-5xl font-extrabold text-[#74342B]">จัดการพนักงาน</h2>
 
         <form class="mt-8 space-y-6" id="appointmentForm" method="post">
             {% csrf_token %}
@@ -16,7 +16,7 @@
             {{form}}
                 <button type="submit"
                     class="bg-[#74342B] group relative  flex justify-center py-4 w-full  mx-auto text-xl font-medium rounded-md text-[#EDDCC2]  hover:bg-[#74342B] hover:bg-[#3A1212]">
-                    จองคิว
+                    เพิ่ม
                 </button>
         </form>
     </div>
