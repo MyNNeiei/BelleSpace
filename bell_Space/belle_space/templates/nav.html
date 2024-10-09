@@ -13,7 +13,7 @@
         <a href="{% url 'home' %}" class="belle">BelleSpace</a>
 
         <div class="content">
-            <a href="{% url 'appointment_form' %}" >จอง</a>
+            <a href="{% url 'appointment_form' %}" >จองบริการ</a>
             <a href="{% url 'appointment' %}" >ประวัติการจอง</a>
             {% if user.is_authenticated %}
                 <a href="{% url 'profile' %}" >{{user.username}}</a>
