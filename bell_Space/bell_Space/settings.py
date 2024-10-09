@@ -91,7 +91,7 @@ DATABASES = {
         "ENGINE": "django.db.backends.postgresql",
         "NAME": "BelleSpace",
         "USER": "postgres",
-        "PASSWORD": "password",
+        "PASSWORD": "mR5dfselnk",
         "HOST": "localhost",
         "PORT": "5432",
     }

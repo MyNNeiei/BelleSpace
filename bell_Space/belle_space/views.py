@@ -9,7 +9,8 @@ from .forms import *
 from django.contrib.auth import logout, login
 from django.contrib.auth.forms import AuthenticationForm
 # Create your views here.
-class IndexView(View):
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+class IndexView(LoginRequiredMixin, PermissionRequiredMixin, View):
     def get(self, request):
         return render(request, "index.html")
     
@@ -33,36 +34,29 @@ class Logout(View):
 class RegisterFormView(View):
     def get(self, request):
         form = UserRegisterForm()
-        formdetail = UserdetailRegisterForm()
-        context = {
-            "userform": form,
-            "formdetail": formdetail
-        }
-
-        return render(request, "login/register_form.html" , context)
+        return render(request, "login/register_form.html" , {"form": form})
     def post(self, request):
-        userform = UserRegisterForm(request.POST)
-        userdetailform = UserdetailRegisterForm(request.POST)
-        if userform.is_valid() and userdetailform.is_valid():
-            # มัน return เป็น user ogject
-            user = userform.save()
-            userdetil = UsersDetail.objects.create(user_id=user,
-                                                    gender=userdetailform.cleaned_data['gender'],
-                                                    phone_number=userdetailform.cleaned_data['phone_number'],
-                                                    birth_date=userdetailform.cleaned_data['birth_date']
-                                                    )
-            # group customer
-            # group = Group.objects.get(name='customer')
-            # user.groups.add(group)
+        form = UserRegisterForm(request.POST)
+        if form.is_valid():
+            user = form.save(commit=False)
+            user.set_password(form.cleaned_data['password1'])
             user.save()
-            login(request,user)
-            return redirect('home')
-        context = {"userform": userform, "userdetailform": userdetailform}
-        return render(request, 'login/register_form.html', context)
+
+            UsersDetail.objects.create(
+                user=user,
+                gender=form.cleaned_data['gender'],
+                phone_number=form.cleaned_data['phone_number'],
+                birth_date=form.cleaned_data['birth_date'],
+                image_profile=form.cleaned_data.get('image_profile')
+            )
+
+            login(request, user)
+            return redirect('login_form')
+        # If forms are invalid, re-render the form with errors
+        return render(request, 'index.html', {"form": form})
     
 class ProfileView(View):
     def get(self, request):
-        return render(request, "index.html")
         form = UserRegisterForm(request.POST)
 
         if form.is_valid():
