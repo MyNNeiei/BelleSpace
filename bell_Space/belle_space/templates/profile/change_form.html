@@ -2,7 +2,7 @@
 {% load static %}
 
 {%  block content %}
-<div>
-    
-</div>
+<form action="{% url 'change_password' %}" method="put">
+    {{form}}
+</form>
 {% endblock %}

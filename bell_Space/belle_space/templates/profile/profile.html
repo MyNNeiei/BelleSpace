@@ -1,0 +1,75 @@
+{% extends 'layout.html' %}
+{% load static %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-[#D18F90] to-[#E2B6B7] flex justify-center items-center p-4">
+    <div class="w-full max-w-2xl bg-white rounded-xl shadow-lg overflow-hidden">
+        <div class="bg-[#74342B] text-white p-6">
+            <h1 class="text-3xl font-bold text-center">Profile</h1>
+        </div>
+        <div class="p-6 space-y-6">
+            <div class="flex justify-center">
+                <div class="relative">
+                    <img src="{{ user.usersdetail.image_profile.url }}" alt="Profile Picture" class="w-32 h-32 rounded-full object-cover border-4 border-[#74342B] shadow-md transition-transform duration-300 hover:scale-105">
+                    <div class="absolute bottom-0 right-0 bg-[#74342B] rounded-full p-2 shadow-lg">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                    </div>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="space-y-2">
+                    <label class="block text-sm font-medium text-gray-700">First Name</label>
+                    <p class="text-lg font-semibold text-gray-900 bg-gray-100 rounded-md p-2">{{ user.first_name }}</p>
+                </div>
+                <div class="space-y-2">
+                    <label class="block text-sm font-medium text-gray-700">Last Name</label>
+                    <p class="text-lg font-semibold text-gray-900 bg-gray-100 rounded-md p-2">{{ user.last_name }}</p>
+                </div>
+                <div class="space-y-2">
+                    <label class="block text-sm font-medium text-gray-700">Email</label>
+                    <p class="text-lg font-semibold text-gray-900 bg-gray-100 rounded-md p-2">{{ user.email }}</p>
+                </div>
+                <div class="space-y-2">
+                    <label class="block text-sm font-medium text-gray-700">Username</label>
+                    <p class="text-lg font-semibold text-gray-900 bg-gray-100 rounded-md p-2">{{ user.username }}</p>
+                </div>
+                <div class="space-y-2">
+                    <label class="block text-sm font-medium text-gray-700">Birth Date</label>
+                    <p class="text-lg font-semibold text-gray-900 bg-gray-100 rounded-md p-2">{{ user.usersdetail.birth_date|date:"F d, Y" }}</p>
+                </div>
+                <div class="space-y-2">
+                    <label class="block text-sm font-medium text-gray-700">Phone Number</label>
+                    <p class="text-lg font-semibold text-gray-900 bg-gray-100 rounded-md p-2">{{ user.usersdetail.phone_number }}</p>
+                </div>
+                <div class="space-y-2 md:col-span-2">
+                    <label class="block text-sm font-medium text-gray-700">Gender</label>
+                    <p class="text-lg font-semibold text-gray-900 bg-gray-100 rounded-md p-2">{{ user.usersdetail.gender }}</p>
+                </div>
+                <div class="space-y-2 md:col-span-2">
+                    <label class="block text-sm font-medium text-gray-700">New Password</label>
+                    <p class="text-lg font-semibold text-gray-900 bg-gray-100 rounded-md p-2">{{ user.password1 }}</p>
+                </div>
+                <div class="space-y-2 md:col-span-2">
+                    <label class="block text-sm font-medium text-gray-700">Confirm New Password</label>
+                    <p class="text-lg font-semibold text-gray-900 bg-gray-100 rounded-md p-2">{{ user.password2 }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="flex justify-between">
+            <div class="bg-gray-50 px-6 py-4">
+                <a href="{% url 'profile_edit' %}" class="bg-[#74342B] text-white font-bold py-2 px-6 rounded-full transition duration-300 ease-in-out transform hover:scale-105 hover:bg-[#8B4D44] focus:outline-none focus:ring-2 focus:ring-[#74342B] focus:ring-opacity-50">
+                    Edit Profile
+                </a>
+            </div>
+            <div class="">
+                <a href="{% url 'change_password' %}" class="bg-[#74342B] text-white font-bold py-2 px-6 rounded-full transition duration-300 ease-in-out transform hover:scale-105 hover:bg-[#8B4D44] focus:outline-none focus:ring-2 focus:ring-[#74342B] focus:ring-opacity-50">
+                    Change Password
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

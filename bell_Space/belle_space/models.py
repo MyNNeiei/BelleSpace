@@ -20,9 +20,9 @@ class UsersDetail(models.Model):
     
     user = models.OneToOneField(User, on_delete=models.PROTECT)
     birth_date = models.DateTimeField()
-    phone_number = models.CharField(max_length=10, null=True)
+    phone_number = models.CharField(max_length=10, null=True, unique=True)
     gender = models.CharField(max_length=10, choices=Gender.choices)
-    image_profile = models.ImageField(upload_to='profile_pic',null=True)
+    image_profile = models.ImageField(upload_to='profile_pic/',null=True)
     
     def get_full_name(self):
         return f"{self.user.first_name} {self.user.last_name}"
@@ -46,6 +46,7 @@ class Appointment(models.Model):
     appointment_date = models.DateTimeField()
     status = models.CharField(max_length=10, choices=Status.choices, default=Status.PENDING)
     staff_id = models.ManyToManyField("Staff")
+    service = models.ManyToManyField("Service")
 
 
 class Service(models.Model):
