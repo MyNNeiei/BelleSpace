@@ -10,7 +10,7 @@ from django.contrib.auth import logout, login
 from django.contrib.auth.forms import AuthenticationForm
 # Create your views here.
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
-class IndexView(LoginRequiredMixin, PermissionRequiredMixin, View):
+class IndexView(View):
     def get(self, request):
         return render(request, "index.html")
     
