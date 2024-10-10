@@ -71,42 +71,42 @@ class ProfileView(View):
             return redirect('login_form.html')
         return render(request, "register_form.html", {"form": form})
     
-class AppointmentFormView(View):
-    def get(self, request):
-        form = AppointmentForm()
-        staff_list = Staff.objects.all()
-        categories = Categories.objects.all()
-        services = Service.objects.all().select_related('category')
+# class AppointmentFormView(View):
+#     def get(self, request):
+#         form = AppointmentForm()
+#         staff_list = Staff.objects.all()
+#         categories = Categories.objects.all()
+#         services = Service.objects.all().select_related('category')
         
-        # Group services by category
-        services_by_category = {}
-        for service in services:
-            if service.category.id not in services_by_category:
-                services_by_category[service.category.id] = []
-            services_by_category[service.category.id].append(service)
+#         # Group services by category
+#         services_by_category = {}
+#         for service in services:
+#             if service.category.id not in services_by_category:
+#                 services_by_category[service.category.id] = []
+#             services_by_category[service.category.id].append(service)
 
-        context = {
-            "form": form,
-            "staff_list": staff_list,
-            "categories": categories,
-            "services_by_category": services_by_category,
-        }
-        return render(request, "appointment_form.html", context)
+#         context = {
+#             "form": form,
+#             "staff_list": staff_list,
+#             "categories": categories,
+#             "services_by_category": services_by_category,
+#         }
+#         return render(request, "appointment_form.html", context)
 
-    def post(self, request):
-        form = AppointmentForm(request.POST)
+#     def post(self, request):
+#         form = AppointmentForm(request.POST)
 
-        if form.is_valid():
-            appointment = form.save(commit=False)
-            appointment.user_id = request.user # Assuming user is logged in
-            appointment.save()
+#         if form.is_valid():
+#             appointment = form.save(commit=False)
+#             appointment.user_id = request.user # Assuming user is logged in
+#             appointment.save()
 
-            return redirect('appointment')
+#             return redirect('appointment')
 
 
 
-    def appointment_success(request):
-        return render(request, "index.html")
+#     def appointment_success(request):
+#         return render(request, "index.html")
 
 
     
@@ -166,3 +166,24 @@ class AppointmentDetailView(View):
             appointment.staff_id.add(staff)
             return redirect('appointment')
         return JsonResponse({'status': 'ok'})
+    
+
+
+class AppointmentFormView(View):
+    def get(self, request):
+        form = AppointmentForm()
+        return render(request, 'appointment_form.html', {"form": form})
+
+    def post(self, request):
+        form = AppointmentForm(request.POST)
+        if form.is_valid():
+            appointment = form.save(commit=False)
+            appointment.user_id = request.user # Assuming user is logged in
+            appointment.save()
+
+            return redirect('appointment')
+
+def load_services(request):
+    category_id = request.GET.get("category")
+    services = Service.objects.filter(category_id=category_id)
+    return render(request, "service_options.html", {"services": services})

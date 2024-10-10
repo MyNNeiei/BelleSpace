@@ -1,6 +1,6 @@
 from datetime import date,datetime
 from django import forms
-from django.forms import EmailInput, ModelForm, PasswordInput, Select, SplitDateTimeField
+from django.forms import DateTimeInput, EmailInput, ModelForm, PasswordInput, Select, SplitDateTimeField
 from django.forms.widgets import Textarea, TextInput, DateInput
 from django.core.exceptions import ValidationError
 from .models import *
@@ -120,52 +120,52 @@ class UserRegisterForm(UserCreationForm):
 #         return cleaned_data
 
 
-class AppointmentForm(forms.ModelForm):
-    # staff_id = forms.ModelChoiceField(
-    #     queryset=Staff.objects.all(),
-    #     required=True,
-    #     label='พนักงาน'
-    # )
-    services = forms.ModelMultipleChoiceField(
-        queryset=Service.objects.all(),
-        widget=forms.CheckboxSelectMultiple(attrs={
-            'class': 'text-[#74342B] text-xl rounded scale-[1.2] my-3 ml-5', 
-        }),
-        required=True,
-        label='บริการ',
-    )
+# class AppointmentForm(forms.ModelForm):
+#     # staff_id = forms.ModelChoiceField(
+#     #     queryset=Staff.objects.all(),
+#     #     required=True,
+#     #     label='พนักงาน'
+#     # )
+#     services = forms.ModelMultipleChoiceField(
+#         queryset=Service.objects.all(),
+#         widget=forms.CheckboxSelectMultiple(attrs={
+#             'class': 'text-[#74342B] text-xl rounded scale-[1.2] my-3 ml-5', 
+#         }),
+#         required=True,
+#         label='บริการ',
+#     )
 
-    class Meta:
-        model = Appointment
-        fields = [
-                'services', 
-                'appointment_date',
+#     class Meta:
+#         model = Appointment
+#         fields = [
+#                 'services', 
+#                 'appointment_date',
 
-                ]
-        labels = {
-            'appointment_date': 'วันที่นัดหมาย',
+#                 ]
+#         labels = {
+#             'appointment_date': 'วันที่นัดหมาย',
         
 
-        }
-        widgets = {
-            'appointment_date': DateInput(attrs={
-                'type': 'date',
-                'class': 'p-2 rounded-md scale-[1.2] ml-6 text-xl'
+#         }
+#         widgets = {
+#             'appointment_date': DateInput(attrs={
+#                 'type': 'date',
+#                 'class': 'p-2 rounded-md scale-[1.2] ml-6 text-xl'
                 
-            }),
+#             }),
         
             
-        }
+#         }
 
-    def clean(self):
-        cleaned_data = super().clean()
-        app_date = cleaned_data.get('appointment_date')
-        now = timezone.now()
+#     def clean(self):
+#         cleaned_data = super().clean()
+#         app_date = cleaned_data.get('appointment_date')
+#         now = timezone.now()
 
-        if app_date and app_date < now:
-            raise ValidationError("จองย้อนไม่ได้จ้า")
+#         if app_date and app_date < now:
+#             raise ValidationError("จองย้อนไม่ได้จ้า")
         
-        return cleaned_data
+#         return cleaned_data
     
 class AppointmentDetailForm(ModelForm):
     class Meta:
@@ -178,3 +178,36 @@ class AppointmentDetailForm(ModelForm):
 
         staff = cleaned_data.get("staff_id")
         return cleaned_data
+
+
+class AppointmentForm(ModelForm):
+    class Meta:
+        model = Appointment  # Set model to Appointment
+        fields = ['category', 'appointment_date']  # Include the required fields
+
+        labels = {
+            'appointment_date': 'วันที่นัดหมาย',  # Appointment date label
+        }
+
+        widgets = {
+            'appointment_date': DateTimeInput(attrs={
+                'type': 'datetime-local',  # Use 'datetime-local' for date and time selection
+                'class': 'p-2 rounded-md scale-[1.2] ml-6 text-xl',  # Custom styles
+            }),
+        }
+
+    category = forms.ModelChoiceField(
+        queryset=Categories.objects.all(),
+        widget=forms.Select(attrs={"hx-get": "load_services/", "hx-target": "#id_service"})
+    )
+
+    service = forms.ModelChoiceField(queryset=Service.objects.none())
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        if "category" in self.data:
+            category_id = int(self.data.get("category"))
+            self.fields["service"].queryset = Service.objects.filter(category_id=category_id)
+        else:
+            self.fields["service"].queryset = Service.objects.none()

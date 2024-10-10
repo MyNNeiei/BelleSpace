@@ -1,3 +1,4 @@
+
 {% extends 'layout.html' %}
 {% load static %}
 
@@ -12,8 +13,7 @@
 
         <form class="mt-8 space-y-6" id="appointmentForm" method="post">
             {% csrf_token %}
-
-            {{form}}
+            {{ form.as_p }}
                 <button type="submit"
                     class="bg-[#74342B] group relative  flex justify-center py-4 w-full  mx-auto text-xl font-medium rounded-md text-[#EDDCC2]  hover:bg-[#74342B] hover:bg-[#3A1212]">
                     จองคิว
