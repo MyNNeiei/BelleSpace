@@ -76,14 +76,14 @@ class EditProfileForm(forms.ModelForm):
         ("LGBTQ", "LGBTQ+"),
         ("O", "Others"),
     ]
-    gender = forms.ChoiceField(required=False, choices=GENDER_CHOICES,
+    gender = forms.ChoiceField(choices=GENDER_CHOICES,
                                widget=forms.Select(attrs={'class': 'border border-gray-300 rounded px-3 py-2 w-full'}))
-    phone_number = forms.CharField(max_length=10,
+    phone_number = forms.CharField(required=False, max_length=10,
                                    widget=forms.TextInput(attrs={'class': 'border border-gray-300 rounded px-3 py-2 w-full', 'placeholder': 'กรอกเบอร์โทรศัพท์'}))
     birth_date = forms.DateField(
         widget=forms.DateInput(attrs={"type": "date", "class" : "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"})
     )
-    image_profile = forms.ImageField()
+    image_profile = forms.ImageField(required=False)
     class Meta:
         model = User
         fields = ['first_name', 
@@ -115,13 +115,21 @@ class EditProfileForm(forms.ModelForm):
     def clean_phone_number(self):
         phone_number = self.cleaned_data["phone_number"]
         
-        data = UsersDetail.objects.filter(phone_number = phone_number)
+        data = UsersDetail.objects.filter(phone_number = phone_number).exclude(user= self.instance.id)
         if data.count():
             raise ValidationError("Phone number Already Exist")
         if len(phone_number) != 10 or not phone_number.isdigit():
             raise ValidationError("เบอร์โทรศัพท์ควรมีแค่10 ตัวเลข")
         return phone_number
     
+    
+    
+class ChangePasswordForm(UserCreationForm):
+    class Meta:
+        model = User
+        fields = [ 'password1',
+                  'password2'
+                  ]
     def clean_password2(self):
         password1 = self.cleaned_data.get("password1")
         password2 = self.cleaned_data.get("password2")

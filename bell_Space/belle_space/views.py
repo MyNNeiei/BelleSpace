@@ -57,12 +57,12 @@ class RegisterFormView(View):
         return render(request, 'index.html', {"form": form})
 
    
-class ProfileView(View):
+class ProfileView(LoginRequiredMixin, PermissionRequiredMixin, View):
     permission_required = []
     def get(self, request):
         return render(request, 'profile/profile.html')
 
-class ProfileEditView(View):
+class ProfileEditView(LoginRequiredMixin, PermissionRequiredMixin, View):
     permission_required = []
     def get(self, request):
         user = request.user
@@ -83,17 +83,22 @@ class ProfileEditView(View):
             userdetail.phone_number = form.cleaned_data['phone_number']
             userdetail.gender = form.cleaned_data['gender']
             userdetail.birth_date = form.cleaned_data['birth_date']
-            new_images = request.FILES.get('image_profile')
-            userdetail.image_profile = new_images
+            if request.FILES:
+                new_images = request.FILES.get('image_profile')
+                userdetail.image_profile = new_images
             userdetail.save()
             return redirect('profile')
         return render(request, 'profile/profile.html', {'form': form})
-# class ChangePassword(View):
-#     def get(self, request):
+class ChangePassword(LoginRequiredMixin, PermissionRequiredMixin, View):
+    def get(self, request):
+        form = ChangePasswordForm()
+        return render(request, 'profile/change_form.html', {'form': form})
         
 # @login_required   
-class AppointmentFormView(View):
+class AppointmentFormView(LoginRequiredMixin, PermissionRequiredMixin, View):
     def get(self, request):
+        
+        
         form = AppointmentForm()
         staff_list = Staff.objects.all()
         categories = Categories.objects.all()
@@ -131,7 +136,7 @@ class AppointmentFormView(View):
 
 
 # @login_required   
-class AppointmentView(View):
+class AppointmentView(LoginRequiredMixin, PermissionRequiredMixin, View):
     def get(self, request):
         appointments = Appointment.objects.annotate(
             fullname=Concat(F('user_id__first_name'), Value(' '), F('user_id__last_name'))
@@ -153,7 +158,7 @@ class AppointmentView(View):
         return JsonResponse({'status': 'ok'})
 
 # @login_required
-class AppointmentDetailView(View):
+class AppointmentDetailView(LoginRequiredMixin, PermissionRequiredMixin,View):
     def get(self, request, detail):
         appointment_detail = Appointment.objects.get(pk=detail)
         form = AppointmentDetailForm(instance=appointment_detail)
@@ -191,7 +196,7 @@ class AppointmentDetailView(View):
     
 
 
-class AppointmentFormView(View):
+class AppointmentFormView(LoginRequiredMixin, PermissionRequiredMixin, View):
     def get(self, request):
         form = AppointmentForm()
         return render(request, 'appointment_form.html', {"form": form})
