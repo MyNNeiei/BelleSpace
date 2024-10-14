@@ -139,12 +139,6 @@ class ChangePasswordForm(UserCreationForm):
                 code='password_mismatch',
             )
         return password2
-    
-    def clean_image(self):
-        image_profile = self.clean_image('image_profile')
-        if image_profile == "":
-            raise forms.ValidationError(self.image_profile)
-        return image_profile
 # class AppointmentForm(forms.ModelForm):
 #     # staff_id = forms.ModelChoiceField(
 #     #     queryset=Staff.objects.all(),

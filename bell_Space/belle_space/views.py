@@ -57,12 +57,12 @@ class RegisterFormView(View):
         return render(request, 'index.html', {"form": form})
 
    
-class ProfileView(View):
+class ProfileView(LoginRequiredMixin, PermissionRequiredMixin, View):
     permission_required = []
     def get(self, request):
         return render(request, 'profile/profile.html')
 
-class ProfileEditView(View):
+class ProfileEditView(LoginRequiredMixin, PermissionRequiredMixin, View):
     permission_required = []
     def get(self, request):
         user = request.user
@@ -91,66 +91,29 @@ class ProfileEditView(View):
 # class ChangePassword(View):
 #     def get(self, request):
         
-# @login_required   
-class AppointmentFormView(View):
-    def get(self, request):
-        form = AppointmentForm()
-        staff_list = Staff.objects.all()
-        categories = Categories.objects.all()
-        services = Service.objects.all().select_related('category')
-        
-#         # Group services by category
-#         services_by_category = {}
-#         for service in services:
-#             if service.category.id not in services_by_category:
-#                 services_by_category[service.category.id] = []
-#             services_by_category[service.category.id].append(service)
 
+
+# @login_required   
+# class AppointmentView(View):
+#     def get(self, request):
+#         appointments = Appointment.objects.annotate(
+#             fullname=Concat(F('user_id__first_name'), Value(' '), F('user_id__last_name'))
+#         ).order_by('appointment_date')
+#         # Annotate services for each appointment
+#         for appointment in appointments:
+#             appointment.services = Service.objects.filter(category=appointment.category)
+
+#         appointment_num = appointments.count()
 #         context = {
-#             "form": form,
-#             "staff_list": staff_list,
-#             "categories": categories,
-#             "services_by_category": services_by_category,
+#             "num": appointment_num,
+#             "appointments": appointments
 #         }
-#         return render(request, "appointment_form.html", context)
-
-#     def post(self, request):
-#         form = AppointmentForm(request.POST)
-
-#         if form.is_valid():
-#             appointment = form.save(commit=False)
-#             appointment.user_id = request.user # Assuming user is logged in
-#             appointment.save()
-
-#             return redirect('appointment')
-
-
-
-#     def appointment_success(request):
-#         return render(request, "index.html")
-
-
-# @login_required   
-class AppointmentView(View):
-    def get(self, request):
-        appointments = Appointment.objects.annotate(
-            fullname=Concat(F('user_id__first_name'), Value(' '), F('user_id__last_name'))
-        ).order_by('appointment_date')
-        # Annotate services for each appointment
-        for appointment in appointments:
-            appointment.services = Service.objects.filter(category=appointment.category)
-
-        appointment_num = appointments.count()
-        context = {
-            "num": appointment_num,
-            "appointments": appointments
-        }
-        return render(request, "appointment.html", context)
+#         return render(request, "appointment.html", context)
         
-    def delete(self, request,id):
-        app_id = Appointment.objects.get(pk=id)
-        app_id.delete()
-        return JsonResponse({'status': 'ok'})
+#     def delete(self, request,id):
+#         app_id = Appointment.objects.get(pk=id)
+#         app_id.delete()
+#         return JsonResponse({'status': 'ok'})
 
 # @login_required
 class AppointmentDetailView(View):
@@ -191,21 +154,98 @@ class AppointmentDetailView(View):
     
 
 
+# class AppointmentFormView(View):
+#     def get(self, request):
+#         form = AppointmentForm()
+#         return render(request, 'appointment_form.html', {"form": form})
+
+#     def post(self, request):
+#         form = AppointmentForm(request.POST)
+#         if form.is_valid():
+#             appointment = form.save(commit=False)
+#             appointment.user_id = request.user # Assuming user is logged in
+#             appointment.save()
+
+#             return redirect('appointment')
+
+# def load_services(request):
+#     category_id = request.GET.get("category")
+#     services = Service.objects.filter(category_id=category_id)
+#     return render(request, "service_options.html", {"services": services})
 class AppointmentFormView(View):
     def get(self, request):
         form = AppointmentForm()
-        return render(request, 'appointment_form.html', {"form": form})
+        staff_list = Staff.objects.all()
+        categories = Categories.objects.all()
+        services = Service.objects.all().select_related('category')
+        
+        # Group services by category
+        services_by_category = {}
+        for service in services:
+            if service.category.id not in services_by_category:
+                services_by_category[service.category.id] = []
+            services_by_category[service.category.id].append(service)
+
+        context = {
+            "form": form,
+            "staff_list": staff_list,
+            "categories": categories,
+            "services_by_category": services_by_category,
+        }
+        return render(request, "appointment_form.html", context)
 
     def post(self, request):
         form = AppointmentForm(request.POST)
+
         if form.is_valid():
             appointment = form.save(commit=False)
-            appointment.user_id = request.user # Assuming user is logged in
-            appointment.save()
 
+            # appointment.user = request.user # Assuming user is logged in
+            appointment.user = 2 
+            appointment.save()
             return redirect('appointment')
 
-def load_services(request):
-    category_id = request.GET.get("category")
-    services = Service.objects.filter(category_id=category_id)
-    return render(request, "service_options.html", {"services": services})
+        staff_list = Staff.objects.all()
+        categories = Categories.objects.all()
+        services = Service.objects.all().select_related('category')
+        services_by_category = {}
+        for service in services:
+            if service.category.id not in services_by_category:
+                services_by_category[service.category.id] = []
+            services_by_category[service.category.id].append(service)
+
+        context = {
+            "form": form,
+            "staff_list": staff_list,
+            "categories": categories,
+            "services_by_category": services_by_category,
+        }
+        return render(request, "appointment_form.html", context)
+
+    def appointment_success(request):
+        return render(request, "index.html")
+
+# class AppointmentView(View):
+#     def get(self, request):
+#         user_fullname = User.objects.annotate(fullname = Concat(F('first_name'),Value(' '),F('last_name')))
+#         appoint_num = user_fullname.count()
+#         context = {"num" : appoint_num,
+#                     "fullname" : user_fullname}
+#         return render(request, "appointment.html", context)
+    
+class AppointmentView(View):
+    def get(self, request):
+        appointments = Appointment.objects.annotate(
+            fullname=Concat(F('user_id__first_name'), Value(' '), F('user_id__last_name'))
+        ).order_by('-appointment_date')
+
+        # Annotate services for each appointment
+        for appointment in appointments:
+            appointment.services = Service.objects.filter(category=appointment.category)
+
+        appointment_num = appointments.count()
+        context = {
+            "num": appointment_num,
+            "appointments": appointments
+        }
+        return render(request, "appointment.html", context)
