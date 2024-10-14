@@ -167,12 +167,7 @@ class AppointmentView(View):
             "appointments": appointments
         }
         return render(request, "appointment.html", context)
-    
-    def delete(self, request, id):
-        appointment = Appointment.objects.get(pk=id)
-        appointment.staff_id.clear()  # Clear the many-to-many relationships
-        appointment.delete()
-        return JsonResponse({'status': 'ok'})
+        
 
 class AppointmentFormView(View):
     def get(self, request):
