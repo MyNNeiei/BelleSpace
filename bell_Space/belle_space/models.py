@@ -22,7 +22,7 @@ class UsersDetail(models.Model):
     birth_date = models.DateTimeField()
     phone_number = models.CharField(max_length=10, null=True)
     gender = models.CharField(max_length=10, choices=Gender.choices)
-    image_profile = models.ImageField(upload_to='profile_pic')
+    image_profile = models.ImageField(upload_to='profile_pic',null=True)
     
     def get_full_name(self):
         return f"{self.user.first_name} {self.user.last_name}"
@@ -46,7 +46,7 @@ class Appointment(models.Model):
     appointment_date = models.DateTimeField()
     status = models.CharField(max_length=10, choices=Status.choices, default=Status.PENDING)
     staff_id = models.ManyToManyField("Staff")
-
+    service = models.ManyToManyField("Service", blank=True)
 
 class Service(models.Model):
     category = models.ForeignKey("Categories", on_delete=models.SET_NULL, null=True, blank=True)

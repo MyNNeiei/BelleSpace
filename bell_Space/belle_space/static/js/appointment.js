@@ -1,4 +1,4 @@
-function deleteProject(appointment_id, csrf_token) {
+function deleteAppointment(appointment_id, csrf_token) {
     // กำหนด path ให้ถูกต้อง
         fetch(`/appointment/${appointment_id}/delete/`, {
             method: 'DELETE',
@@ -13,4 +13,4 @@ function deleteProject(appointment_id, csrf_token) {
             window.location.reload()
         })
         .catch(error => console.error('Error:', error));
-  }
+}
