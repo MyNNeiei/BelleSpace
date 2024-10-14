@@ -80,11 +80,11 @@ class ProfileEditView(View):
         print(form.errors)
         if form.is_valid():
             userdetail = UsersDetail.objects.get(user=user)
+            new_images = request.FILES.get('image_profile')
+            userdetail.image_profile = new_images
             userdetail.phone_number = form.cleaned_data['phone_number']
             userdetail.gender = form.cleaned_data['gender']
             userdetail.birth_date = form.cleaned_data['birth_date']
-            new_images = request.FILES.get('image_profile')
-            userdetail.image_profile = new_images
             userdetail.save()
             return redirect('profile')
         return render(request, 'profile/profile.html', {'form': form})

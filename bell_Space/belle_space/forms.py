@@ -83,7 +83,7 @@ class EditProfileForm(forms.ModelForm):
     birth_date = forms.DateField(
         widget=forms.DateInput(attrs={"type": "date", "class" : "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"})
     )
-    image_profile = forms.ImageField()
+    image_profile = forms.ImageField(required=False)
     class Meta:
         model = User
         fields = ['first_name', 
@@ -131,6 +131,12 @@ class EditProfileForm(forms.ModelForm):
                 code='password_mismatch',
             )
         return password2
+    
+    def clean_image(self):
+        image_profile = self.clean_image('image_profile')
+        if image_profile == "":
+            raise forms.ValidationError(self.image_profile)
+        return image_profile
 # class AppointmentForm(forms.ModelForm):
 #     # staff_id = forms.ModelChoiceField(
 #     #     queryset=Staff.objects.all(),

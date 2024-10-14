@@ -22,7 +22,7 @@ class UsersDetail(models.Model):
     birth_date = models.DateTimeField()
     phone_number = models.CharField(max_length=10, null=True, unique=True)
     gender = models.CharField(max_length=10, choices=Gender.choices)
-    image_profile = models.ImageField(upload_to='profile_pic/',null=True)
+    image_profile = models.ImageField(upload_to='profile_pic/',null=True,blank=True)
     
     def get_full_name(self):
         return f"{self.user.first_name} {self.user.last_name}"
