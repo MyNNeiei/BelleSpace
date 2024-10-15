@@ -130,29 +130,8 @@ class AppointmentFormView(View):
 #         return render(request, "index.html")
 
 
-# @login_required   
-class AppointmentView(View):
-    def get(self, request):
-        appointments = Appointment.objects.annotate(
-            fullname=Concat(F('user_id__first_name'), Value(' '), F('user_id__last_name'))
-        ).order_by('appointment_date')
+    
 
-        # Annotate services for each appointment
-        for appointment in appointments:
-            appointment.services = appointment.service.all()
-
-        appointment_num = appointments.count()
-        context = {
-            "num": appointment_num,
-            "appointments": appointments
-        }
-        return render(request, "appointment.html", context)
-
-        
-    def delete(self, request,id):
-        app_id = Appointment.objects.get(pk=id)
-        app_id.delete()
-        return JsonResponse({'status': 'ok'})
 
 # @login_required
 class AppointmentDetailView(View):
@@ -191,7 +170,31 @@ class AppointmentDetailView(View):
             return redirect('appointment')
         return JsonResponse({'status': 'ok'})
     
+    
 
+
+class AppointmentView(View):
+    def get(self, request):
+        appointments = Appointment.objects.annotate(
+            fullname=Concat(F('user_id__first_name'), Value(' '), F('user_id__last_name'))
+        ).order_by('appointment_date')
+
+        # Annotate services for each appointment
+        for appointment in appointments:
+            appointment.services = appointment.service.all()
+
+        appointment_num = appointments.count()
+        context = {
+            "num": appointment_num,
+            "appointments": appointments
+        }
+        return render(request, "appointment.html", context)
+    
+    def delete(self, request, id):
+        appointment = Appointment.objects.get(pk=id)
+        appointment.staff_id.clear()  # Clear the many-to-many relationships
+        appointment.delete()
+        return JsonResponse({'status': 'ok'})
 
 class AppointmentFormView(View):
     def get(self, request):
@@ -210,6 +213,7 @@ class AppointmentFormView(View):
             return redirect('appointment')
 
         return render(request, 'appointment_form.html', {"form": form})
+
 
 
 def load_services(request):
