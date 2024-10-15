@@ -11,10 +11,14 @@
 <body>
     <nav>
         <a href="{% url 'home' %}" class="belle">BelleSpace</a>
-
         <div class="content">
+        {% if user_in_customer_group %}
             <a href="{% url 'appointment_form' %}" >จองบริการ</a>
             <a href="{% url 'appointment' %}" >ประวัติการจอง</a>
+        {% endif %}
+        {% if user_in_manager_group or user_in_staff_group %}
+            <a href="{% url 'appointment' %}" >ประวัติการจอง</a>
+        {% endif %}
             {% if user.is_authenticated %}
                 <a href="{% url 'profile' %}" >{{user.username}}</a>
                 <a href="{% url 'logout' %}"><ion-icon name="log-in-outline"></ion-icon></a>

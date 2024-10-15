@@ -18,11 +18,22 @@ from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 class IndexView(View):
     def get(self, request):
-        return render(request, "index.html")
+        user_in_customer_group = request.user.groups.filter(name='Customer').exists()
+        user_in_manager_group = request.user.groups.filter(name='Manager').exists()
+        user_in_staff_group = request.user.groups.filter(name='Staff').exists()
+        context = {
+            'user_in_customer_group': user_in_customer_group,
+            'user_in_manager_group' : user_in_manager_group,
+            'user_in_staff_group' : user_in_staff_group
+            # other context variables
+        }
+        return render(request, "index.html", context)
     
+        
 class LoginFormView(View):
     def get(self, request):
         form = AuthenticationForm()
+
         return render(request, "login/login_form.html" , {"form": form})
     def post(self, request):
         form = AuthenticationForm(data=request.POST)
@@ -40,11 +51,11 @@ class LoginFormView(View):
                 
                 elif get_group == "Staff":
                     login(request, user)
-                    return redirect('appoint_staff')
+                    return redirect('appointment_staff')
 
                 elif get_group == "Manager":
                     login(request, user)
-                    return redirect('appointment_detail')
+                    return redirect('home')
             return redirect('home')# Redirect to home after successful login
         print(form.errors)
         return render(request, "login/login_form.html", {"form": form})        
@@ -71,7 +82,8 @@ class RegisterFormView(View):
                 birth_date=form.cleaned_data['birth_date'],
                 image_profile=form.cleaned_data.get('image_profile')
             )
-
+            customer_group = Group.objects.get(name='Customer')  # Replace with your group name
+            user.groups.add(customer_group)
             login(request, user)
             return redirect('login_form')
         # If forms are invalid, re-render the form with errors
@@ -82,7 +94,16 @@ class ProfileView(LoginRequiredMixin, PermissionRequiredMixin,View):
     login_url = '/login/'
     permission_required = ["belle_space.view_usersdetail"]
     def get(self, request):
-        return render(request, 'profile/profile.html')
+        user_in_customer_group = request.user.groups.filter(name='Customer').exists()
+        user_in_manager_group = request.user.groups.filter(name='Manager').exists()
+        user_in_staff_group = request.user.groups.filter(name='Staff').exists()
+        context = {
+            'user_in_customer_group': user_in_customer_group,
+            'user_in_manager_group' : user_in_manager_group,
+            'user_in_staff_group' : user_in_staff_group
+            # other context variables
+        }
+        return render(request, 'profile/profile.html' ,context)
 
 class ProfileEditView(LoginRequiredMixin, PermissionRequiredMixin, View):
     login_url = '/login/'
@@ -90,12 +111,22 @@ class ProfileEditView(LoginRequiredMixin, PermissionRequiredMixin, View):
     def get(self, request):
         user = request.user
         userdetail = UsersDetail.objects.get(user=user)
+        user_in_customer_group = request.user.groups.filter(name='Customer').exists()
+        user_in_manager_group = request.user.groups.filter(name='Manager').exists()
+        user_in_staff_group = request.user.groups.filter(name='Staff').exists()
+        context = {
+            'user_in_customer_group': user_in_customer_group,
+            'user_in_manager_group' : user_in_manager_group,
+            'user_in_staff_group' : user_in_staff_group
+            # other context variables
+        }
         form = EditProfileForm(instance=user,initial={
             'birth_date': userdetail.birth_date,
             'phone_number': userdetail.phone_number,
             'gender': userdetail.gender,
             'image_profile' : userdetail.image_profile})
-        return render(request, 'profile/edit_profile.html', {'form': form})
+        return render(request, 'profile/edit_profile.html', {'form': form,
+                                                             'context': context})
 
     def post(self, request):
         user = request.user
@@ -111,7 +142,6 @@ class ProfileEditView(LoginRequiredMixin, PermissionRequiredMixin, View):
             userdetail.save()
             return redirect('profile')
         return render(request, 'profile/profile.html', {'form': form})
-    
 class ChangePassword(LoginRequiredMixin, PermissionRequiredMixin, View):
     login_url = '/login/'
     permission_required = ["belle_space.change_usersdetail"]
@@ -127,106 +157,57 @@ class ChangePassword(LoginRequiredMixin, PermissionRequiredMixin, View):
         
         form = ChangePasswordForm(user=request.user)
         return render(request, 'change_password.html', {'form': form})
-        
-
-
-# @login_required   
-# class AppointmentView(View):
-#     def get(self, request):
-#         appointments = Appointment.objects.annotate(
-#             fullname=Concat(F('user_id__first_name'), Value(' '), F('user_id__last_name'))
-#         ).order_by('appointment_date')
-#         # Annotate services for each appointment
-#         for appointment in appointments:
-#             appointment.services = Service.objects.filter(category=appointment.category)
-
-#         appointment_num = appointments.count()
-#         context = {
-#             "num": appointment_num,
-#             "appointments": appointments
-#         }
-#         return render(request, "appointment.html", context)
-        
-#     def delete(self, request,id):
-#         app_id = Appointment.objects.get(pk=id)
-#         app_id.delete()
-#         return JsonResponse({'status': 'ok'})
-
-# @login_required
-class AppointmentFormView(LoginRequiredMixin, PermissionRequiredMixin, View):
-    def get(self, request):
-        
-        
-        form = AppointmentForm()
-        staff_list = Staff.objects.all()
-        categories = Categories.objects.all()
-        services = Service.objects.all().select_related('category')
-        
-#         # Group services by category
-#         services_by_category = {}
-#         for service in services:
-#             if service.category.id not in services_by_category:
-#                 services_by_category[service.category.id] = []
-#             services_by_category[service.category.id].append(service)
-
-#         context = {
-#             "form": form,
-#             "staff_list": staff_list,
-#             "categories": categories,
-#             "services_by_category": services_by_category,
-#         }
-#         return render(request, "appointment_form.html", context)
-
-#     def post(self, request):
-#         form = AppointmentForm(request.POST)
-
-#         if form.is_valid():
-#             appointment = form.save(commit=False)
-#             appointment.user_id = request.user # Assuming user is logged in
-#             appointment.save()
-
-#             return redirect('appointment')
-
-
-
-#     def appointment_success(request):
-#         return render(request, "index.html")
-
-
-    
-
-
-# @login_required
-class AppointmentDetailView(LoginRequiredMixin, PermissionRequiredMixin ,View):
+class AppointmentView(LoginRequiredMixin, PermissionRequiredMixin, View):
     login_url = '/login/'
-    permission_required = ["belle_space.add_staff"]
-    def get(self, request, detail):
+    permission_required = ["belle_space.view_appointment"]
+    def get(self, request):
+        appointments = Appointment.objects.annotate(
+            fullname=Concat(F('user_id__first_name'), Value(' '), F('user_id__last_name'))
+        ).order_by('appointment_date')
+        user_in_customer_group = request.user.groups.filter(name='Customer').exists()
+        user_in_manager_group = request.user.groups.filter(name='Manager').exists()
+        user_in_staff_group = request.user.groups.filter(name='Staff').exists()
+        # Annotate services for each appointment
+        for appointment in appointments:
+            appointment.services = appointment.service.all()
+
+        appointment_num = appointments.count()
+        context = {
+            "num": appointment_num,
+            "appointments": appointments,
+            'user_in_customer_group': user_in_customer_group,
+            'user_in_manager_group' : user_in_manager_group,
+            'user_in_staff_group' : user_in_staff_group
+        }
         
+        return render(request, "appointment.html", context)
+    
+    def delete(self, request, id):
+        appointment = Appointment.objects.get(pk=id)
+        appointment.staff_id.clear()  # Clear the many-to-many relationships
+        appointment.delete()
+        return JsonResponse({'status': 'ok'})
+# @login_required
+class AppointmentAddStaffView(View):
+    def get(self, request, detail):
         appointment_detail = Appointment.objects.get(pk=detail)
-        form = AppointmentDetailForm(instance=appointment_detail)
+        form = AppointmentAddStaffForm(instance=appointment_detail)
         all_appointment = appointment_detail.staff_id.all()
 
-        context = { "form" : form,
-                    "appointment_detail":appointment_detail,
-                    "all_appointment" : all_appointment}
-        return render(request, "appointment_detail.html", context)
+        context = { "form" : form,}
+        return render(request, "appointment_addstaff.html", context)
     
     def post(self, request, detail):
         # for updating article instance set instance=article
         appointment_detail = Appointment.objects.get(pk=detail)
-        form = AppointmentDetailForm(request.POST, instance=appointment_detail)
+        form = AppointmentAddStaffForm(request.POST, instance=appointment_detail)
         all_appointment = appointment_detail.staff_id.all()
-
-        context = { "form" : form,
-                    "appointment_detail": appointment_detail,
-                    "all_appointment" : all_appointment}
-                    
-        # save if valid                                       
+        context = { "form" : form,}                                             
         if form.is_valid():                                                                      
             form.save()                                                                          
             return redirect('appointment')
 
-        return render(request, "appointment_detail.html", context)
+        return render(request, "appointment_addstaff.html", context)
     
     def put(self, request, appointment_id, staff_id):
         appointment = Appointment.objects.get(id=appointment_id)
@@ -237,51 +218,66 @@ class AppointmentDetailView(LoginRequiredMixin, PermissionRequiredMixin ,View):
         return JsonResponse({'status': 'ok'})
     
     
+class AppointmentEditStatusView(View):
+    def get(self, request, detail):
+        appointment_detail = Appointment.objects.get(pk=detail)
+        form = AppointmentEditStatusForm(instance=appointment_detail)
 
-
-class AppointmentView(LoginRequiredMixin, PermissionRequiredMixin ,View):
-    login_url = '/login/'
-    permission_required = ["belle_space.view_appointment"]
-    def get(self, request):
-        appointments = Appointment.objects.annotate(
-            fullname=Concat(F('user_id__first_name'), Value(' '), F('user_id__last_name'))
-        ).order_by('appointment_date')
-
-        # Annotate services for each appointment
-        for appointment in appointments:
-            appointment.services = appointment.service.all()
-
-        appointment_num = appointments.count()
         context = {
-            "num": appointment_num,
-            "appointments": appointments
+            "form": form,
         }
-        return render(request, "appointment.html", context)
-    
-    def delete(self, request, id):
-        if not request.user.has_perm('belle_space.delete_appointment'):
-            raise PermissionDenied  # Raise a 403 error if the user lacks permission
-        
-        try:
-            appointment = Appointment.objects.get(pk=id)
-            appointment.staff_id.clear()  # Clear the many-to-many relationships
-            appointment.delete()
-            return JsonResponse({'status': 'ok'})
-        except Appointment.DoesNotExist:
-            return JsonResponse({'status': 'error', 'message': 'Appointment not found'}, status=404)
+        return render(request, "appointment_editstatus.html", context)
+
+    def post(self, request, detail):
+        appointment_detail = Appointment.objects.get(pk=detail)
+        form = AppointmentEditStatusForm(request.POST, instance=appointment_detail)
+
+        if form.is_valid():
+            form.save()
+            return redirect('appointment')
+
+        context = {
+            "form": form,
+        }
+        return render(request, "appointment_editstatus.html", context)
+
+
 
 class AppointmentFormView(LoginRequiredMixin, PermissionRequiredMixin , View):
     login_url = '/login/'
     permission_required = ["belle_space.add_appointment"]
     def get(self, request):
         form = AppointmentForm()
-        return render(request, 'appointment_form.html', {"form": form})
+        user_in_customer_group = request.user.groups.filter(name='Customer').exists()
+        user_in_manager_group = request.user.groups.filter(name='Manager').exists()
+        user_in_staff_group = request.user.groups.filter(name='Staff').exists()
+        context = {
+            'user_in_customer_group': user_in_customer_group,
+            'user_in_manager_group' : user_in_manager_group,
+            'user_in_staff_group' : user_in_staff_group
+            # other context variables
+        }
+        return render(request, 'appointment_form.html', {"form": form,
+                                                         'context':context})
 
     def post(self, request):
         form = AppointmentForm(request.POST)
         if form.is_valid():
             appointment = form.save(commit=False)
             appointment.user_id = request.user  # Assuming user is logged in
+            appointment_date = appointment.appointment_date.date()  # Get just the date part
+            category = appointment.category  # Assuming there's a 'category' field in the Appointment model
+
+            # Check if the user already has an appointment with the same category on the same day
+            existing_appointment = Appointment.objects.filter(
+                user_id=request.user,
+                appointment_date__date=appointment_date,
+                category=category  # Assuming 'category' is a field in your Appointment model
+            ).exists()
+
+            if existing_appointment:
+                messages.error(request, "คุณสามารถจองบริการได้เพียง 1 ประเภทต่อวัน")
+                return render(request, 'appointment_form.html', {"form": form})
             appointment.save()
 
             # Saving the selected services

@@ -2,9 +2,9 @@
 {% block page_title %}Project{% endblock %}
 {% block header %}Project{% endblock %}
 {% block content %}
-<div class="bg-[#D18F90] min-h-screen py-12 px-10 sm:px-6 lg:px-8">
+<div class="bg-[#D18F90] min-h-screen py-12 px-10 ">
     <div class="text-center font-bold text-7xl mt-14 mx-auto text-[#74342B]">ประวัติการจอง</div>
-    <div class="overflow-x-auto mt-6">
+    <div class=" mt-6">
         <table class="min-w-full bg-[#EDDCC2] border border-[#74342B]">
             <thead>
                 <tr class="bg-[#74342B] text-[#EDDCC2] border-b-2 border-[#74342B]">
@@ -18,23 +18,33 @@
             <tbody>
                 {% for appointment in appointments %}
                 <tr class="border-b border-[#74342B]">
+                    <!-- วันเวลา -->
                     <td class="text-center py-4 ">{{ appointment.appointment_date }}</td>
+                    <!-- พนักงาน -->
                     <td class="py-4 text-center">
                         {% for staff in appointment.staff_id.all %}
                             {{ staff.user.first_name }} {{ staff.user.last_name }}{% if not forloop.last %}, {% endif %}
                         {% endfor %}
                     </td>
+                    <!-- บริการ -->
                     <td class="py-4 text-center">
-                        {% for service in appointment.services.all %}  <!-- This should work now -->
+                        {% for service in appointment.services.all %}  
                         {{ service.name }}{% if not forloop.last %}, {% endif %}
                     {% endfor %}
                     </td>
+                    <!-- สถานะ -->
                     <td class="py-4 text-center">{{ appointment.get_status_display }}</td>
-                    <td class="py-4 action flex justify-center space-x-2">
-                        <a href="{% url 'appointment_detail' appointment.id %}"
+                    <td class="py-4 flex justify-end space-x-2 mr-4">
+                        {% if user_in_manager_group %}
+                        <a href="{% url 'appointment_editstatus' appointment.id %}"
+                            class="bg-[#55855B] p-2 text-[#EDDCC2] border-2 border-[#0F0F0F] ">อัปเดตสถานะ</a>
+
+                        <a href="{% url 'appointment_addstaff' appointment.id %}"
                             class="bg-[#F4DC7B] p-2 text-[#0F0F0F] border-2 border-[#0F0F0F] ">เพิ่มพนักงาน</a>
+
                         <button type="button" onclick="deleteAppointment('{{appointment.id}}','{{csrf_token}}')"
                             class="bg-[#914D43] p-2 text-[#EDDCC2] border-2 border-[#0F0F0F]">ยกเลิก</button>
+                        {% endif %}
                     </td>
                 </tr>
                 {% endfor %}

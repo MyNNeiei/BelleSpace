@@ -1,0 +1,21 @@
+{% extends 'layout.html' %}
+{% load static %}
+{% block title %}สถานะการจอง{% endblock %}
+{% block content %}
+<div class="bg-[#D18F90] min-h-screen flex items-center justify-center py-12 px-10 sm:px-6 lg:px-8">
+    <div class="max-w-md w-full space-y-8 bg-[#EDDCC2] p-6 rounded-lg shadow-md">
+        <h2 class="mt-6 text-center text-4xl font-extrabold text-[#74342B]">สถานะการจอง</h2>
+        <form class="mt-8 space-y-6" method="post">
+            {% csrf_token %}
+            <div class="flex items-center mb-2">
+                <label class="flex text-xl font-medium text-[#74342B] mr-4">{{ form.status.label }}</label>
+                <div class="flex-grow">{{ form.status }}</div>
+            </div>         
+            <button type="submit"
+                class="bg-[#74342B] w-full py-4  text-xl font-medium rounded-md text-[#EDDCC2] hover:bg-[#3A1212]">
+                อัปเดตสถานะ
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}
