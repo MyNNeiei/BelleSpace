@@ -56,7 +56,7 @@ class RegisterFormView(View):
         # If forms are invalid, re-render the form with errors
         return render(request, 'index.html', {"form": form})
 
-   
+
 class ProfileView(View):
     permission_required = []
     def get(self, request):
@@ -90,89 +90,6 @@ class ProfileEditView(View):
         return render(request, 'profile/profile.html', {'form': form})
 # class ChangePassword(View):
 #     def get(self, request):
-        
-# @login_required   
-class AppointmentFormView(View):
-    def get(self, request):
-        form = AppointmentForm()
-        staff_list = Staff.objects.all()
-        categories = Categories.objects.all()
-        services = Service.objects.all().select_related('category')
-        
-#         # Group services by category
-#         services_by_category = {}
-#         for service in services:
-#             if service.category.id not in services_by_category:
-#                 services_by_category[service.category.id] = []
-#             services_by_category[service.category.id].append(service)
-
-#         context = {
-#             "form": form,
-#             "staff_list": staff_list,
-#             "categories": categories,
-#             "services_by_category": services_by_category,
-#         }
-#         return render(request, "appointment_form.html", context)
-
-#     def post(self, request):
-#         form = AppointmentForm(request.POST)
-
-#         if form.is_valid():
-#             appointment = form.save(commit=False)
-#             appointment.user_id = request.user # Assuming user is logged in
-#             appointment.save()
-
-#             return redirect('appointment')
-
-
-
-#     def appointment_success(request):
-#         return render(request, "index.html")
-
-
-    
-
-
-# @login_required
-class AppointmentDetailView(View):
-    def get(self, request, detail):
-        appointment_detail = Appointment.objects.get(pk=detail)
-        form = AppointmentDetailForm(instance=appointment_detail)
-        all_appointment = appointment_detail.staff_id.all()
-
-        context = { "form" : form,
-                    "appointment_detail":appointment_detail,
-                    "all_appointment" : all_appointment}
-        return render(request, "appointment_detail.html", context)
-    
-    def post(self, request, detail):
-        # for updating article instance set instance=article
-        appointment_detail = Appointment.objects.get(pk=detail)
-        form = AppointmentDetailForm(request.POST, instance=appointment_detail)
-        all_appointment = appointment_detail.staff_id.all()
-
-        context = { "form" : form,
-                    "appointment_detail": appointment_detail,
-                    "all_appointment" : all_appointment}
-                    
-        # save if valid                                       
-        if form.is_valid():                                                                      
-            form.save()                                                                          
-            return redirect('appointment')
-
-        return render(request, "appointment_detail.html", context)
-    
-    def put(self, request, appointment_id, staff_id):
-        appointment = Appointment.objects.get(id=appointment_id)
-        staff = Staff.objects.get(id=staff_id)
-        if staff not in appointment.staff_id.all():
-            appointment.staff_id.add(staff)
-            return redirect('appointment')
-        return JsonResponse({'status': 'ok'})
-    
-    
-
-
 class AppointmentView(View):
     def get(self, request):
         appointments = Appointment.objects.annotate(
@@ -195,6 +112,61 @@ class AppointmentView(View):
         appointment.staff_id.clear()  # Clear the many-to-many relationships
         appointment.delete()
         return JsonResponse({'status': 'ok'})
+# @login_required
+class AppointmentAddStaffView(View):
+    def get(self, request, detail):
+        appointment_detail = Appointment.objects.get(pk=detail)
+        form = AppointmentAddStaffForm(instance=appointment_detail)
+        all_appointment = appointment_detail.staff_id.all()
+
+        context = { "form" : form,}
+        return render(request, "appointment_addstaff.html", context)
+    
+    def post(self, request, detail):
+        # for updating article instance set instance=article
+        appointment_detail = Appointment.objects.get(pk=detail)
+        form = AppointmentAddStaffForm(request.POST, instance=appointment_detail)
+        all_appointment = appointment_detail.staff_id.all()
+        context = { "form" : form,}                                             
+        if form.is_valid():                                                                      
+            form.save()                                                                          
+            return redirect('appointment')
+
+        return render(request, "appointment_addstaff.html", context)
+    
+    def put(self, request, appointment_id, staff_id):
+        appointment = Appointment.objects.get(id=appointment_id)
+        staff = Staff.objects.get(id=staff_id)
+        if staff not in appointment.staff_id.all():
+            appointment.staff_id.add(staff)
+            return redirect('appointment')
+        return JsonResponse({'status': 'ok'})
+    
+    
+class AppointmentEditStatusView(View):
+    def get(self, request, detail):
+        appointment_detail = Appointment.objects.get(pk=detail)
+        form = AppointmentEditStatusForm(instance=appointment_detail)
+
+        context = {
+            "form": form,
+        }
+        return render(request, "appointment_editstatus.html", context)
+
+    def post(self, request, detail):
+        appointment_detail = Appointment.objects.get(pk=detail)
+        form = AppointmentEditStatusForm(request.POST, instance=appointment_detail)
+
+        if form.is_valid():
+            form.save()
+            return redirect('appointment')
+
+        context = {
+            "form": form,
+        }
+        return render(request, "appointment_editstatus.html", context)
+
+
 
 class AppointmentFormView(View):
     def get(self, request):

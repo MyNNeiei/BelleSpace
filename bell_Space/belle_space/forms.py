@@ -320,7 +320,7 @@ class EditProfileForm(forms.ModelForm):
 #             )
 #         return cleaned_data
 
-class AppointmentDetailForm(forms.ModelForm):
+class AppointmentAddStaffForm(forms.ModelForm):
     staff_id = forms.ModelMultipleChoiceField(
         queryset=Staff.objects.all(),
         widget=forms.SelectMultiple,
@@ -338,6 +338,19 @@ class AppointmentDetailForm(forms.ModelForm):
         staff = cleaned_data.get("staff_id")
         return cleaned_data
 
+class AppointmentEditStatusForm(forms.ModelForm):
+    status = forms.ChoiceField(
+        choices=Appointment.Status.choices,
+        widget=forms.Select(attrs={
+            'class': 'px-4 rounded-md text-xl'
+        }),
+        label="สถานะ"
+    )
+
+    class Meta:
+        model = Appointment
+        fields = ['status']
+    
 class AppointmentForm(ModelForm):
     class Meta:
         model = Appointment
@@ -368,7 +381,7 @@ class AppointmentForm(ModelForm):
         queryset=Service.objects.none(),
         label="บริการ",
         widget=forms.SelectMultiple(attrs={
-            "class": "form-multiselect w-full p-3 rounded-md border border-gray-300 bg-white text-gray-900 focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 shadow-sm text-xl"
+            "class": "form-multiselect"
         })
     )
     def __init__(self, *args, **kwargs):
