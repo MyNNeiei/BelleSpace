@@ -1,0 +1,282 @@
+[33mcommit 6fbffbf45fc36be0fcfef9aedaf0bb8618dd455d[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mbamibibi[m[33m)[m
+Author: bamibibi <Natthacha9876@gmail.com>
+Date:   Fri Oct 4 15:41:33 2024 +0700
+
+    appointment form & appointment all (delete, add staff)
+
+[33mcommit 58875afc96867906355b8642ebdfeb515f67514b[m
+Merge: 10d78ef cefaaaa
+Author: bamibibi <Natthacha9876@gmail.com>
+Date:   Wed Oct 2 15:43:31 2024 +0700
+
+    appointment form and history
+
+[33mcommit 10d78ef83ea531f7ff004c2027eb56ad1421dbd7[m
+Author: bamibibi <Natthacha9876@gmail.com>
+Date:   Wed Oct 2 15:42:24 2024 +0700
+
+    appointment form and history
+
+[33mcommit cefaaaaee18a69c405efd6d563a5147dc2cc4830[m
+Merge: 1734800 ec64253
+Author: Kullanan Sunan <90614733+MyNNeiei@users.noreply.github.com>
+Date:   Wed Oct 2 15:40:24 2024 +0700
+
+    Merge pull request #13 from MyNNeiei/bamibibi
+    
+    Bamibibi
+
+[33mcommit ec642537f28230d2d3b52a348d45bea9c3fb1cac[m
+Merge: 1734800 6bb2153
+Author: MyNNeiei <kullananzaza@gmail.com>
+Date:   Wed Oct 2 15:39:26 2024 +0700
+
+    mergeforbibi
+
+[33mcommit 6bb2153a04b8690218cd1e384197bdb120b24bcc[m
+Author: bamibibi <Natthacha9876@gmail.com>
+Date:   Wed Oct 2 15:33:29 2024 +0700
+
+    appointment form and history
+
+[33mcommit 1734800551456b810a5775ce11aa85aab37382a2[m[33m ([m[1;31morigin/nornor[m[33m)[m
+Author: MyNNeiei <kullananzaza@gmail.com>
+Date:   Wed Oct 2 15:15:42 2024 +0700
+
+    lower commit
+
+[33mcommit e435d0367c5b5d5d8926ed24455cea630bb69433[m
+Merge: 01a181a 50e2431
+Author: MyNNeiei <kullananzaza@gmail.com>
+Date:   Wed Oct 2 04:31:31 2024 +0700
+
+    Merge branch 'main' of https://github.com/MyNNeiei/BelleSpace into nornor
+
+[33mcommit 01a181ad08bd4d5895f90d4208cae31ba3c7f099[m
+Author: MyNNeiei <kullananzaza@gmail.com>
+Date:   Wed Oct 2 04:30:40 2024 +0700
+
+    nncommit : login finish not Authen
+
+[33mcommit 03e68d14f9f7a9cd538ed998d454371e47aecabc[m
+Merge: cec38f4 50e2431
+Author: bamibibi <Natthacha9876@gmail.com>
+Date:   Tue Oct 1 20:16:57 2024 +0700
+
+    Merge branch 'main' of https://github.com/MyNNeiei/BelleSpace into bamibibi
+
+[33mcommit cec38f4f8b517c9c8a5975ae492f83499b409dd6[m
+Merge: 22b4aa3 486d86f
+Author: bamibibi <Natthacha9876@gmail.com>
+Date:   Tue Oct 1 20:15:11 2024 +0700
+
+    Merge branch 'main' of https://github.com/MyNNeiei/BelleSpace into bamibibi
+
+[33mcommit 50e2431a29b4f48a71bcf9221c0be23836ec86a5[m
+Merge: 486d86f 9c9fe4e
+Author: Kullanan Sunan <90614733+MyNNeiei@users.noreply.github.com>
+Date:   Tue Oct 1 20:14:21 2024 +0700
+
+    Merge pull request #11 from MyNNeiei/nornor
+    
+    NN fixed
+
+[33mcommit 9c9fe4ef013c8c3b25066940c38156989cc327e3[m
+Author: MyNNeiei <kullananzaza@gmail.com>
+Date:   Tue Oct 1 20:13:08 2024 +0700
+
+    NN fixed
+
+[33mcommit 22b4aa3425d078dc690cca93e8002b28a7ab4750[m
+Author: bamibibi <Natthacha9876@gmail.com>
+Date:   Tue Oct 1 19:58:03 2024 +0700
+
+    form appointment
+
+[33mcommit 486d86f7fbed8a542b640fd082b1ea2ff73e147b[m
+Merge: f1c6f37 7c7b897
+Author: Kullanan Sunan <90614733+MyNNeiei@users.noreply.github.com>
+Date:   Tue Oct 1 19:54:15 2024 +0700
+
+    Merge pull request #10 from MyNNeiei/nornor
+    
+    Nornor:forbibi
+
+[33mcommit 7c7b897cba635eff1408256b98cdc7c9330e134f[m
+Merge: 1bebb4d f1c6f37
+Author: MyNNeiei <kullananzaza@gmail.com>
+Date:   Tue Oct 1 19:53:18 2024 +0700
+
+    commit for merge
+
+[33mcommit 1bebb4d54f1e4c68325326874685973ceb39f747[m
+Author: MyNNeiei <kullananzaza@gmail.com>
+Date:   Tue Oct 1 19:51:34 2024 +0700
+
+    NN:commitforbibi
+
+[33mcommit f1c6f37b66a964a012ab8eb86e253a1921ab878e[m
+Merge: dfec25b 4c033d3
+Author: MyNNeiei <kullananzaza@gmail.com>
+Date:   Tue Oct 1 17:47:03 2024 +0700
+
+    Merge branch 'main' of https://github.com/MyNNeiei/BelleSpace
+
+[33mcommit dfec25bb736bee32f55a35d2e567ac4c62a8c750[m
+Author: MyNNeiei <kullananzaza@gmail.com>
+Date:   Tue Oct 1 17:46:42 2024 +0700
+
+    fixed about index.html
+
+[33mcommit 246a51ec7b7c8d259b631cea0a87fccd0e981512[m
+Author: MyNNeiei <kullananzaza@gmail.com>
+Date:   Tue Oct 1 17:44:58 2024 +0700
+
+    NNcommit:nn edit model
+
+[33mcommit dca81834edd46f0bb8970a9571e073cb8eb9449e[m
+Author: MyNNeiei <kullananzaza@gmail.com>
+Date:   Tue Oct 1 00:40:28 2024 +0700
+
+    NNcommit:regisandlogin process 30%
+
+[33mcommit 4c033d3ef6877dc9db93545431c8b9b28ba90388[m
+Merge: 6183734 586b426
+Author: Kullanan Sunan <90614733+MyNNeiei@users.noreply.github.com>
+Date:   Sat Sep 28 19:27:55 2024 +0700
+
+    Merge pull request #9 from MyNNeiei/nornor
+    
+    NNcommit:process not done
+
+[33mcommit 586b426a77fab88e093246eb6469642540072887[m
+Merge: 30c3811 6183734
+Author: MyNNeiei <kullananzaza@gmail.com>
+Date:   Sat Sep 28 19:27:05 2024 +0700
+
+    nornor:merging
+
+[33mcommit 6183734cfd0942a6465a808e091eaa3eec61fedb[m
+Merge: cb3834c a9380f0
+Author: Kullanan Sunan <90614733+MyNNeiei@users.noreply.github.com>
+Date:   Sat Sep 28 19:24:21 2024 +0700
+
+    Merge pull request #8 from MyNNeiei/bamibibi
+    
+    BamibibiMerging
+
+[33mcommit a9380f00b5aabec71179e93e5fff267e17c6f888[m
+Merge: 11c07a6 cb3834c
+Author: MyNNeiei <kullananzaza@gmail.com>
+Date:   Sat Sep 28 19:22:42 2024 +0700
+
+    FromMerging
+
+[33mcommit 30c38113dadd4ce4e7965fb511955d3afa18a86a[m
+Author: MyNNeiei <kullananzaza@gmail.com>
+Date:   Sat Sep 28 19:18:06 2024 +0700
+
+    NNcommit:process not done
+
+[33mcommit 11c07a6a9066631ce44850440fc5e704f6004135[m
+Author: bamibibi <Natthacha9876@gmail.com>
+Date:   Sat Sep 28 19:08:46 2024 +0700
+
+    index and appointment_form
+
+[33mcommit ad71e25b29ca4ca7cb903f6f606502700b0f19c1[m
+Merge: 779f827 f045af3
+Author: bamibibi <Natthacha9876@gmail.com>
+Date:   Sat Sep 28 17:03:02 2024 +0700
+
+    Merge branch 'main' of https://github.com/MyNNeiei/BelleSpace into bamibibi
+
+[33mcommit cb3834c5bb87c51e8c417c737c9bc5d8b4d69b78[m
+Merge: 0311c87 92dbef0
+Author: MyNNeiei <kullananzaza@gmail.com>
+Date:   Sat Sep 28 14:23:34 2024 +0700
+
+    Merging:nornortomain
+
+[33mcommit 92dbef077928a0a45aa956e51c29c8be0c9de320[m
+Merge: 6f98eed f045af3
+Author: MyNNeiei <kullananzaza@gmail.com>
+Date:   Sat Sep 28 14:21:56 2024 +0700
+
+    Merge branch 'main' of https://github.com/MyNNeiei/BelleSpace into nornor
+
+[33mcommit 6f98eedfe28efaf57642f72c81e094bf7035e83c[m
+Merge: 91bccff 779f827
+Author: MyNNeiei <kullananzaza@gmail.com>
+Date:   Sat Sep 28 14:20:16 2024 +0700
+
+    Merging form bamibibi
+
+[33mcommit 779f8271319cb78dbc3e104ef5188b296634a6ea[m
+Author: bamibibi <Natthacha9876@gmail.com>
+Date:   Sat Sep 28 04:06:42 2024 +0700
+
+    index and static
+
+[33mcommit f045af328ac7bd84e5788c7dadd2b40b92052c53[m
+Merge: c3943a4 91bccff
+Author: Kullanan Sunan <90614733+MyNNeiei@users.noreply.github.com>
+Date:   Sat Sep 28 03:23:57 2024 +0700
+
+    Merge pull request #6 from MyNNeiei/nornor
+    
+    Fixed with
+
+[33mcommit 0311c87d7daca9ceda5d1af695aa07f67bb41310[m
+Author: MyNNeiei <kullananzaza@gmail.com>
+Date:   Sat Sep 28 03:22:50 2024 +0700
+
+    main:merging
+
+[33mcommit 91bccff387dedeb16b69e0310d5c852a177823c2[m
+Merge: fc0ef0e c3943a4
+Author: MyNNeiei <kullananzaza@gmail.com>
+Date:   Sat Sep 28 03:20:55 2024 +0700
+
+    nornor:merging
+
+[33mcommit fc0ef0ebc7eba42329ce46f6065c96bf63b2b39b[m
+Author: MyNNeiei <kullananzaza@gmail.com>
+Date:   Sat Sep 28 03:17:48 2024 +0700
+
+    NNcommit:fixed
+
+[33mcommit c3943a4850bda93288d0915ce2b05312206ce49e[m
+Merge: 667cad9 71569dc
+Author: Kullanan Sunan <90614733+MyNNeiei@users.noreply.github.com>
+Date:   Fri Sep 27 21:13:12 2024 +0700
+
+    Merge pull request #5 from MyNNeiei/bamibibi
+    
+    Merge pull request #4 from MyNNeiei/main
+
+[33mcommit 71569dc7e0fc1ff35f4f6a35978b36afe7ec54db[m
+Merge: f19b5c8 667cad9
+Author: Kullanan Sunan <90614733+MyNNeiei@users.noreply.github.com>
+Date:   Fri Sep 27 21:12:54 2024 +0700
+
+    Merge pull request #4 from MyNNeiei/main
+    
+    bambibi
+
+[33mcommit 667cad926f82e26a801e3adf6d9f7ca94e052df2[m
+Merge: c864595 f19b5c8
+Author: MyNNeiei <kullananzaza@gmail.com>
+Date:   Fri Sep 27 21:12:13 2024 +0700
+
+    Merging:first_merge
+
+[33mcommit 22edcdaa4d19cbc65efceb809ee2a41014468cb8[m
+Author: MyNNeiei <kullananzaza@gmail.com>
+Date:   Fri Sep 27 21:10:35 2024 +0700
+
+    NNcommit:merge
+
+[33mcommit 945ef07e3ba80fb4fb53f3cd67409dd407f13846[m
+Merge: ee9dcdb f19b5c8
+Auth
