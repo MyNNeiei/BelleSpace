@@ -1,0 +1,52 @@
+{% extends 'layout.html' %}
+{% load static %}
+
+{%  block content %}
+<div class="bg-[#D18F90] h-screen w-full flex justify-center items-center">
+    <div class="mx-auto py-10">
+        <div class="w-full max-w-md mx-auto">
+        <div class="bg-white shadow-md rounded-2xl px-8 pt-6 pb-8 mb-4 mt-6">
+            <h2 class="text-3xl font-bold mb-6"><center>Edit Profile</center></h2>
+            <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="flex flex-col gap-2">
+                <div>
+                    <label for="edit_first_name">Edit First Name</label>
+                    {{ form.first_name }}
+                </div>
+                <div>
+                    <label for="edit_last_name">Edit Last Name</label>
+                    {{ form.last_name }}
+                </div>
+                <div>
+                    <label for="edit_email">Edit Email</label>
+                    {{ form.email }}
+                </div>
+                <div>
+                    <label for="edit_phone_number">Edit Phone Number</label>
+                    {{ form.phone_number}}
+                </div>
+                <div>
+                    <label for="edit_gender">Edit Gender</label>
+                    {{ form.gender }}
+                </div>
+                <div>
+                    <label for="edit_birth_date">Edit Birth Date</label>
+                    {{ form.birth_date }}
+                </div>
+                <div>
+                    <label for="edit_profile_img">Edit Profile image</label>
+                    <br>
+                    {{ form.image_profile }}
+                </div>
+            <div class="flex items-center justify-between">
+                <button class="bg-[#74342B] text-white font-bold py-2 px-4 rounded transition ease-in-out delay-300 hover:bg-white hover:border-2 hover:border-[#74342B] hover:text-black" type="submit">
+                Save Changes
+                </button>
+            </div>
+            </form>
+        </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

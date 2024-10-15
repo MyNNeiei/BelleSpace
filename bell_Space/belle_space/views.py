@@ -9,6 +9,7 @@ from .forms import *
 from django.contrib.auth import logout, login
 from django.contrib.auth.forms import AuthenticationForm
 # Create your views here.
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 class IndexView(View):
     def get(self, request):
         return render(request, "index.html")
@@ -33,36 +34,29 @@ class Logout(View):
 class RegisterFormView(View):
     def get(self, request):
         form = UserRegisterForm()
-        formdetail = UserdetailRegisterForm()
-        context = {
-            "userform": form,
-            "formdetail": formdetail
-        }
-
-        return render(request, "login/register_form.html" , context)
+        return render(request, "login/register_form.html" , {"form": form})
     def post(self, request):
-        userform = UserRegisterForm(request.POST)
-        userdetailform = UserdetailRegisterForm(request.POST)
-        if userform.is_valid() and userdetailform.is_valid():
-            # มัน return เป็น user ogject
-            user = userform.save()
-            userdetil = UsersDetail.objects.create(user_id=user,
-                                                    gender=userdetailform.cleaned_data['gender'],
-                                                    phone_number=userdetailform.cleaned_data['phone_number'],
-                                                    birth_date=userdetailform.cleaned_data['birth_date']
-                                                    )
-            # group customer
-            # group = Group.objects.get(name='customer')
-            # user.groups.add(group)
+        form = UserRegisterForm(request.POST)
+        if form.is_valid():
+            user = form.save(commit=False)
+            user.set_password(form.cleaned_data['password1'])
             user.save()
-            login(request,user)
-            return redirect('home')
-        context = {"userform": userform, "userdetailform": userdetailform}
-        return render(request, 'login/register_form.html', context)
+
+            UsersDetail.objects.create(
+                user=user,
+                gender=form.cleaned_data['gender'],
+                phone_number=form.cleaned_data['phone_number'],
+                birth_date=form.cleaned_data['birth_date'],
+                image_profile=form.cleaned_data.get('image_profile')
+            )
+
+            login(request, user)
+            return redirect('login_form')
+        # If forms are invalid, re-render the form with errors
+        return render(request, 'index.html', {"form": form})
     
 class ProfileView(View):
     def get(self, request):
-        return render(request, "index.html")
         form = UserRegisterForm(request.POST)
 
         if form.is_valid():
@@ -77,65 +71,46 @@ class ProfileView(View):
             return redirect('login_form.html')
         return render(request, "register_form.html", {"form": form})
     
-class AppointmentFormView(View):
-    def get(self, request):
-        form = AppointmentForm()
-        staff_list = Staff.objects.all()
-        categories = Categories.objects.all()
-        services = Service.objects.all().select_related('category')
+# class AppointmentFormView(View):
+#     def get(self, request):
+#         form = AppointmentForm()
+#         staff_list = Staff.objects.all()
+#         categories = Categories.objects.all()
+#         services = Service.objects.all().select_related('category')
         
-        # Group services by category
-        services_by_category = {}
-        for service in services:
-            if service.category.id not in services_by_category:
-                services_by_category[service.category.id] = []
-            services_by_category[service.category.id].append(service)
+#         # Group services by category
+#         services_by_category = {}
+#         for service in services:
+#             if service.category.id not in services_by_category:
+#                 services_by_category[service.category.id] = []
+#             services_by_category[service.category.id].append(service)
 
-        context = {
-            "form": form,
-            "staff_list": staff_list,
-            "categories": categories,
-            "services_by_category": services_by_category,
-        }
-        return render(request, "appointment_form.html", context)
+#         context = {
+#             "form": form,
+#             "staff_list": staff_list,
+#             "categories": categories,
+#             "services_by_category": services_by_category,
+#         }
+#         return render(request, "appointment_form.html", context)
 
-    def post(self, request):
-        form = AppointmentForm(request.POST)
+#     def post(self, request):
+#         form = AppointmentForm(request.POST)
 
-        if form.is_valid():
-            appointment = form.save(commit=False)
-            appointment.user_id = request.user # Assuming user is logged in
-            appointment.save()
+#         if form.is_valid():
+#             appointment = form.save(commit=False)
+#             appointment.user_id = request.user # Assuming user is logged in
+#             appointment.save()
 
-            return redirect('appointment')
+#             return redirect('appointment')
 
 
 
-    def appointment_success(request):
-        return render(request, "index.html")
+#     def appointment_success(request):
+#         return render(request, "index.html")
 
 
     
-class AppointmentView(View):
-    def get(self, request):
-        appointments = Appointment.objects.annotate(
-            fullname=Concat(F('user_id__first_name'), Value(' '), F('user_id__last_name'))
-        ).order_by('appointment_date')
-        # Annotate services for each appointment
-        for appointment in appointments:
-            appointment.services = Service.objects.filter(category=appointment.category)
 
-        appointment_num = appointments.count()
-        context = {
-            "num": appointment_num,
-            "appointments": appointments
-        }
-        return render(request, "appointment.html", context)
-        
-    def delete(self, request,id):
-        app_id = Appointment.objects.get(pk=id)
-        app_id.delete()
-        return JsonResponse({'status': 'ok'})
 
 class AppointmentDetailView(View):
     def get(self, request, detail):
@@ -172,3 +147,54 @@ class AppointmentDetailView(View):
             appointment.staff_id.add(staff)
             return redirect('appointment')
         return JsonResponse({'status': 'ok'})
+    
+    
+
+
+class AppointmentView(View):
+    def get(self, request):
+        appointments = Appointment.objects.annotate(
+            fullname=Concat(F('user_id__first_name'), Value(' '), F('user_id__last_name'))
+        ).order_by('appointment_date')
+
+        # Annotate services for each appointment
+        for appointment in appointments:
+            appointment.services = appointment.service.all()
+
+        appointment_num = appointments.count()
+        context = {
+            "num": appointment_num,
+            "appointments": appointments
+        }
+        return render(request, "appointment.html", context)
+    
+    def delete(self, request, id):
+        appointment = Appointment.objects.get(pk=id)
+        appointment.staff_id.clear()  # Clear the many-to-many relationships
+        appointment.delete()
+        return JsonResponse({'status': 'ok'})
+
+class AppointmentFormView(View):
+    def get(self, request):
+        form = AppointmentForm()
+        return render(request, 'appointment_form.html', {"form": form})
+
+    def post(self, request):
+        form = AppointmentForm(request.POST)
+        if form.is_valid():
+            appointment = form.save(commit=False)
+            appointment.user_id = request.user  # Assuming user is logged in
+            appointment.save()
+
+            # Saving the selected services
+            form.save_m2m()  # This saves the many-to-many relationships
+            return redirect('appointment')
+
+        return render(request, 'appointment_form.html', {"form": form})
+
+
+
+def load_services(request):
+    category_id = request.GET.get("category")
+    services = Service.objects.filter(category_id=category_id)
+    return render(request, "service_options.html", {"services": services})

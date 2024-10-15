@@ -19,8 +19,8 @@ class UsersDetail(models.Model):
         O = "Other"
     
     user = models.OneToOneField(User, on_delete=models.PROTECT)
-    birth_date = models.DateTimeField()
-    phone_number = models.CharField(max_length=10, null=True)
+    birth_date = models.DateField()
+    phone_number = models.CharField(max_length=10, null=True, unique=True)
     gender = models.CharField(max_length=10, choices=Gender.choices)
     image_profile = models.ImageField(upload_to='profile_pic')
     
@@ -37,15 +37,16 @@ class Staff(models.Model):
     
 class Appointment(models.Model):
     class Status(models.TextChoices):
-        PENDING = "Pending", "Pending"
-        CANCELLED = "Cancelled", "Cancelled"
-        COMPLETED = "Completed", "Completed"
+        PENDING = "ตรวจสอบ", "ตรวจสอบ"
+        CANCELLED = "ยกเลิก", "ยกเลิก"
+        COMPLETED = "จองสำเร็จ", "จองสำเร็จ"
     
     user_id = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)  # Linking with the built-in User model
     category = models.ForeignKey("Categories", on_delete=models.SET_NULL, null=True, blank=True)
     appointment_date = models.DateTimeField()
     status = models.CharField(max_length=10, choices=Status.choices, default=Status.PENDING)
     staff_id = models.ManyToManyField("Staff")
+    service = models.ManyToManyField("Service", blank=True)
 
 
 class Service(models.Model):
