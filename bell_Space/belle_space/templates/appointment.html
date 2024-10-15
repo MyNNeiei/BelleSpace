@@ -4,46 +4,57 @@
 {% block header %}Project{% endblock %}
 
 {% block content %}
-
-<div class="bg-[#D18F90] min-h-screen py-12 px-10 sm:px-6 lg:px-8">
-    <div class="text-center font-bold text-5xl mt-12 mx-auto text-[#74342B]">ประวัติการจอง</div>
-    <div class="gap-3 flex flex-col ">
-
-        <br>
-        <div class="bg-[#74342B] text-[#EDDCC2] border-2 border-[#74342B] w-full flex justify-between items-center p-5">
-            <div class="text-center">วันที่</div>
-            <div class="">พนักงาน</div>
-            <div class="">บริการ</div>
-            <div class="">สถานะ</div>
-            <div class="">บุ้</div>
+<div class="bg-[#D18F90] min-h-screen py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-7xl mx-auto">
+        <h1 class="text-center font-bold text-5xl mt-12 mb-8 text-[#74342B]">ประวัติการจอง</h1>
+        <div class="overflow-x-auto">
+            <table class="w-full border-collapse">
+                <thead>
+                    <tr class="bg-[#74342B] text-[#EDDCC2]">
+                        <th class="border-2 border-[#74342B] p-3 text-left">วันที่</th>
+                        <th class="border-2 border-[#74342B] p-3 text-left">พนักงาน</th>
+                        <th class="border-2 border-[#74342B] p-3 text-left">บริการ</th>
+                        <th class="border-2 border-[#74342B] p-3 text-left">สถานะ</th>
+                        <th class="border-2 border-[#74342B] p-3 text-left">การดำเนินการ</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for appointment in appointments %}
+                    <tr class="bg-[#EDDCC2]">
+                        <td class="border-2 border-[#74342B] p-3">
+                            {{ appointment.appointment_date|date:"d / m / Y" }}
+                        </td>
+                        <td class="border-2 border-[#74342B] p-3">
+                            {% for staff in appointment.staff_id.all %}
+                                {{ staff.user.first_name }} {{ staff.user.last_name }}{% if not forloop.last %}, {% endif %}
+                            {% endfor %}
+                        </td>
+                        <td class="border-2 border-[#74342B] p-3">
+                            {% for service in appointment.services %}
+                                {{ service.name }}{% if not forloop.last %}, {% endif %}
+                            {% endfor %}
+                        </td>
+                        <td class="border-2 border-[#74342B] p-3">
+                            {{ appointment.get_status_display }}
+                        </td>
+                        <td class="border-2 border-[#74342B] p-3">
+                            <div class="flex flex-col sm:flex-row gap-2">
+                                <a href="{% url 'appointment_detail' appointment.id %}"
+                                   class="bg-[#F4DC7B] p-2 text-[#0F0F0F] border-2 border-[#0F0F0F] text-center">
+                                    เพิ่มพนักงาน
+                                </a>
+                                <button type="submit" 
+                                        onclick="deleteProject('{{appointment.id}}','{{csrf_token}}')"
+                                        class="bg-[#914D43] p-2 text-[#EDDCC2] border-2 border-[#0F0F0F]">
+                                    ยกเลิก
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
-
-
-        {% for appointment in appointments %}
-        <div class="bg-[#EDDCC2] border-2 border-[#74342B] w-full flex justify-between items-center p-5">
-
-            <div>{{ appointment.appointment_date|date:"d / m / Y" }}</div>
-
-            <div>{% for staff in appointment.staff_id.all %}
-                {{ staff.user.first_name }} {{ staff.user.last_name }}{% if not forloop.last %}, {% endif %}
-                {% endfor %}</div>
-                
-            <div> {% for service in appointment.services %}
-                {{ service.name }}{% if not forloop.last %}, {% endif %}
-                {% endfor %}</div>
-            <div class="">{{ appointment.get_status_display }}</div>
-            <div class="action">
-                <!-- กำหนด path ให้ถูกต้อง -->
-                <a href="{% url 'appointment_detail' appointment.id %}"
-                    class="bg-[#F4DC7B] p-3 text-[#0F0F0F border-2 border-[#0F0F0F]">เพิ่มพนักงาน</a>
-
-                <!-- ถ้า code มันแจ้งเตือนอะไรก็ปล่อยไปนะครับไม่มีผลอะไร  -->
-                <button type="submit" onclick="deleteProject('{{appointment.id}}','{{csrf_token}}')"
-                    class="bg-[#914D43] p-3 text-[#EDDCC2] border-2 border-[#0F0F0F]">ยกเลิก</button>
-            </div>
-
-        </div>
-        {% endfor %}
     </div>
 </div>
 {% endblock %}

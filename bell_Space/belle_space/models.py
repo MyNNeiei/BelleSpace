@@ -13,10 +13,10 @@ from django.contrib.auth.models import User
 #         return f"{self.first_name} {self.last_name}"
 class UsersDetail(models.Model):
     class Gender(models.Choices):
-        M = "Male"
-        F = "Female"
+        M = "ผู้ชาย"
+        F = "ผู้หญิง"
         LGBTQ = "LGBTQ+"
-        O = "Other"
+        O = "อื่นๆ"
     
     user = models.OneToOneField(User, on_delete=models.PROTECT)
     birth_date = models.DateField()
@@ -25,6 +25,7 @@ class UsersDetail(models.Model):
     image_profile = models.ImageField(upload_to='profile_pic/',null=True,blank=True)
     
     def get_full_name(self):
+        
         return f"{self.user.first_name} {self.user.last_name}"
 
 

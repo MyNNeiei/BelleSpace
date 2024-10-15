@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block content %}
-<div class="min-h-screen bg-gradient-to-br from-[#D18F90] to-[#E2B6B7] flex justify-center items-center p-4">
+<div class="min-h-screen bg-[#EDDCC2] flex justify-center items-center p-4">
     <div class="w-full max-w-2xl bg-white rounded-xl shadow-lg overflow-hidden">
         <div class="bg-[#74342B] text-white p-6">
             <h1 class="text-3xl font-bold text-center">Profile</h1>
@@ -25,32 +25,32 @@
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="space-y-2">
-                    <label class="block text-sm font-medium text-gray-700">First Name</label>
-                    <p class="text-lg font-semibold text-gray-900 bg-gray-100 rounded-md p-2">{{ user.first_name }}</p>
+                    <label class="block text-sm font-medium text-[#74342B]">ชื่อ</label>
+                    <p class="text-lg font-semibold text-[#74342B] bg-gray-100 rounded-md p-2">{{ user.first_name }}</p>
                 </div>
                 <div class="space-y-2">
-                    <label class="block text-sm font-medium text-gray-700">Last Name</label>
-                    <p class="text-lg font-semibold text-gray-900 bg-gray-100 rounded-md p-2">{{ user.last_name }}</p>
+                    <label class="block text-sm font-medium text-[#74342B]">นามสกุล</label>
+                    <p class="text-lg font-semibold text-[#74342B] bg-gray-100 rounded-md p-2">{{ user.last_name }}</p>
                 </div>
                 <div class="space-y-2">
-                    <label class="block text-sm font-medium text-gray-700">Email</label>
-                    <p class="text-lg font-semibold text-gray-900 bg-gray-100 rounded-md p-2">{{ user.email }}</p>
+                    <label class="block text-sm font-medium text-[#74342B]">อีเมล</label>
+                    <p class="text-lg font-semibold text-[#74342B] bg-gray-100 rounded-md p-2">{{ user.email }}</p>
                 </div>
                 <div class="space-y-2">
-                    <label class="block text-sm font-medium text-gray-700">Username</label>
-                    <p class="text-lg font-semibold text-gray-900 bg-gray-100 rounded-md p-2">{{ user.username }}</p>
+                    <label class="block text-sm font-medium text-[#74342B]">ชื่อผู้ใช้</label>
+                    <p class="text-lg font-semibold text-[#74342B] bg-gray-100 rounded-md p-2">{{ user.username }}</p>
                 </div>
                 <div class="space-y-2">
-                    <label class="block text-sm font-medium text-gray-700">Birth Date</label>
-                    <p class="text-lg font-semibold text-gray-900 bg-gray-100 rounded-md p-2">{{ user.usersdetail.birth_date|date:"F d, Y" }}</p>
+                    <label class="block text-sm font-medium text-[#74342B]">วันเกิด</label>
+                    <p class="text-lg font-semibold text-[#74342B] bg-gray-100 rounded-md p-2">{{ user.usersdetail.birth_date|date:"F d, Y" }}</p>
                 </div>
                 <div class="space-y-2">
-                    <label class="block text-sm font-medium text-gray-700">Phone Number</label>
-                    <p class="text-lg font-semibold text-gray-900 bg-gray-100 rounded-md p-2">{{ user.usersdetail.phone_number }}</p>
+                    <label class="block text-sm font-medium text-[#74342B]">เบอร์โทรศัพท์</label>
+                    <p class="text-lg font-semibold text-[#74342B] bg-gray-100 rounded-md p-2">{{ user.usersdetail.phone_number }}</p>
                 </div>
                 <div class="space-y-2 md:col-span-2">
-                    <label class="block text-sm font-medium text-gray-700">Gender</label>
-                    <p class="text-lg font-semibold text-gray-900 bg-gray-100 rounded-md p-2">{{ user.usersdetail.gender }}</p>
+                    <label class="block text-sm font-medium text-[#74342B]">เพศ</label>
+                    <p class="text-lg font-semibold text-[#74342B] bg-gray-100 rounded-md p-2">{{ user.usersdetail.gender }}</p>
                 </div>
             </div>
         </div>

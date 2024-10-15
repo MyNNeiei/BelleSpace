@@ -71,10 +71,10 @@ class UserRegisterForm(UserCreationForm):
 class EditProfileForm(forms.ModelForm):
     GENDER_CHOICES = [
         ("", "เลือกเพศ"),
-        ("M", "Male"),
-        ("F", "Female"),
+        ("ผู้ชาย", "ผู้ชาย"),
+        ("ผู้หญิง", "ผู้หญิง"),
         ("LGBTQ", "LGBTQ+"),
-        ("O", "Others"),
+        ("อื่นๆ", "อื่นๆ"),
     ]
     gender = forms.ChoiceField(choices=GENDER_CHOICES,
                                widget=forms.Select(attrs={'class': 'border border-gray-300 rounded px-3 py-2 w-full'}))
@@ -121,6 +121,15 @@ class EditProfileForm(forms.ModelForm):
         if len(phone_number) != 10 or not phone_number.isdigit():
             raise ValidationError("เบอร์โทรศัพท์ควรมีแค่10 ตัวเลข")
         return phone_number
+    def clean_password2(self):
+        password1 = self.cleaned_data.get("password1")
+        password2 = self.cleaned_data.get("password2")
+        if password1 and password2 and password1 != password2:
+            raise forms.ValidationError(
+                self.error_messages['รหัสไม่ตรงกัน'],
+                code='password_mismatch',
+            )
+        return password2
     
     
     
@@ -130,15 +139,7 @@ class ChangePasswordForm(UserCreationForm):
         fields = [ 'password1',
                   'password2'
                   ]
-    def clean_password2(self):
-        password1 = self.cleaned_data.get("password1")
-        password2 = self.cleaned_data.get("password2")
-        if password1 and password2 and password1 != password2:
-            raise forms.ValidationError(
-                self.error_messages['password_mismatch'],
-                code='password_mismatch',
-            )
-        return password2
+    
 # class AppointmentForm(forms.ModelForm):
 #     # staff_id = forms.ModelChoiceField(
 #     #     queryset=Staff.objects.all(),
@@ -284,3 +285,17 @@ class AppointmentForm(ModelForm):
             self.fields["service"].queryset = Service.objects.filter(category_id=category_id)
         else:
             self.fields["service"].queryset = Service.objects.none()
+
+class StatusUpdateForm(forms.ModelForm):
+    GENDER_CHOICES = [
+        ("", "ระหว่างตรวจสอบ"),
+        ("ตรวจสอบ", "ตรวจสอบ"),
+        ("ยกเลิก", "ยกเลิก"),
+        ("จองสำเร็จ", "จองสำเร็จ"),
+    ]
+    class Meta:
+        model = Appointment
+        fields = ['status']
+        widgets = {
+            "gender" : Select(attrs={'class': 'border border-gray-300 rounded px-3 py-2 w-full'}),
+        }
