@@ -1,0 +1,48 @@
+{% extends 'layout.html' %}
+{% load static %}
+
+{% block title %}ตารางงาน{% endblock %}
+
+{% block content %}
+<div class="bg-[#D18F90] min-h-screen py-12 px-10 sm:px-6 lg:px-8">
+    <div class="text-center font-bold text-7xl mt-14 mx-auto text-[#74342B]">ประวัติการจอง</div>
+    <div class="overflow-x-auto mt-6">
+        <table class="min-w-full bg-[#EDDCC2] border border-[#74342B]">
+            <thead>
+                <tr class="bg-[#74342B] text-[#EDDCC2] border-b-2 border-[#74342B]">
+                    <th class="text-center py-3">วันที่</th>
+                    <th class="text-center py-3">พนักงาน</th>
+                    <th class="text-center py-3">บริการ</th>
+                    <th class="text-center py-3">สถานะ</th>
+                    <th class="text-center py-3" ></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for appointment in appointments %}
+                <tr class="border-b border-[#74342B]">
+                    <td class="text-center py-4 ">{{ appointment.appointment_date }}</td>
+                    <td class="py-4 text-center">
+                        {% for staff in appointment.staff_id.all %}
+                            {{ staff.user.first_name }} {{ staff.user.last_name }}{% if not forloop.last %}, {% endif %}
+                        {% endfor %}
+                    </td>
+                    <td class="py-4 text-center">
+                        {% for service in appointment.services.all %}  <!-- This should work now -->
+                        {{ service.name }}{% if not forloop.last %}, {% endif %}
+                    {% endfor %}
+                    </td>
+                    <td class="py-4 text-center">{{ appointment.get_status_display }}</td>
+                    <td class="py-4 action flex justify-center space-x-2">
+                        {% if user.groups.filter(name='Manager').exists %}
+                        <a href="{% url 'appointment_detail' appointment.id %}"
+                            class="bg-[#F4DC7B] p-2 text-[#0F0F0F] border-2 border-[#0F0F0F] ">เพิ่มพนักงาน</a>
+                        <button type="button" onclick="deleteAppointment('{{appointment.id}}','{{csrf_token}}')"
+                            class="bg-[#914D43] p-2 text-[#EDDCC2] border-2 border-[#0F0F0F]">ยกเลิก</button>
+                        {% endif %}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

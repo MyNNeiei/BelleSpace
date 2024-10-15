@@ -5,11 +5,15 @@ from django.db.models import Value,F,Count
 from .models import *
 from django.http import JsonResponse
 from django.contrib import messages
+from django.core.exceptions import PermissionDenied
 from .forms import *
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import logout, login
 from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import Group
+from django.contrib.auth import update_session_auth_hash
 # Create your views here.
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 class IndexView(View):
@@ -22,9 +26,25 @@ class LoginFormView(View):
         return render(request, "login/login_form.html" , {"form": form})
     def post(self, request):
         form = AuthenticationForm(data=request.POST)
+        
         if form.is_valid():
             user = form.get_user()
-            login(request, user)
+            user_groups = user.groups.all()
+            for group in user_groups:
+                get_group = group.name  
+                
+                # ผู้ใช้ตรงกับ group ไหน เด้งไปหน้านั้น
+                if get_group == "Customer":
+                    login(request, user)
+                    return redirect('home')
+                
+                elif get_group == "Staff":
+                    login(request, user)
+                    return redirect('appoint_staff')
+
+                elif get_group == "Manager":
+                    login(request, user)
+                    return redirect('appointment_detail')
             return redirect('home')# Redirect to home after successful login
         print(form.errors)
         return render(request, "login/login_form.html", {"form": form})        
@@ -58,16 +78,16 @@ class RegisterFormView(View):
         return render(request, 'index.html', {"form": form})
 
    
-class ProfileView(View):
-    # login_url = '/profile/'
-    # permission_required = ["usersdetail.view_user"]
+class ProfileView(LoginRequiredMixin, PermissionRequiredMixin,View):
+    login_url = '/login/'
+    permission_required = ["belle_space.view_usersdetail"]
     def get(self, request):
         return render(request, 'profile/profile.html')
 
-class ProfileEditView(View):
-    # permission_required = ["belle_space.view_profile", "belle_space.change_profile"]
+class ProfileEditView(LoginRequiredMixin, PermissionRequiredMixin, View):
+    login_url = '/login/'
+    permission_required = ["belle_space.change_usersdetail"]
     def get(self, request):
-        
         user = request.user
         userdetail = UsersDetail.objects.get(user=user)
         form = EditProfileForm(instance=user,initial={
@@ -91,8 +111,22 @@ class ProfileEditView(View):
             userdetail.save()
             return redirect('profile')
         return render(request, 'profile/profile.html', {'form': form})
-# class ChangePassword(View):
-#     def get(self, request):
+    
+class ChangePassword(LoginRequiredMixin, PermissionRequiredMixin, View):
+    login_url = '/login/'
+    permission_required = ["belle_space.change_usersdetail"]
+    def post(self, request):
+        form = PasswordChangeForm(user=request.user, data=request.POST)
+        if form.is_valid():
+            user = form.save()
+            update_session_auth_hash(request, user)  # Important for keeping the user logged in
+            messages.success(request, 'Your password was successfully updated!')
+            return redirect('change_password')
+        else:
+            messages.error(request, 'Please correct the error below.')
+        
+        form = ChangePasswordForm(user=request.user)
+        return render(request, 'change_password.html', {'form': form})
         
 
 
@@ -163,8 +197,11 @@ class AppointmentFormView(LoginRequiredMixin, PermissionRequiredMixin, View):
 
 
 # @login_required
-class AppointmentDetailView(View):
+class AppointmentDetailView(LoginRequiredMixin, PermissionRequiredMixin ,View):
+    login_url = '/login/'
+    permission_required = ["belle_space.add_staff"]
     def get(self, request, detail):
+        
         appointment_detail = Appointment.objects.get(pk=detail)
         form = AppointmentDetailForm(instance=appointment_detail)
         all_appointment = appointment_detail.staff_id.all()
@@ -202,7 +239,9 @@ class AppointmentDetailView(View):
     
 
 
-class AppointmentView(View):
+class AppointmentView(LoginRequiredMixin, PermissionRequiredMixin ,View):
+    login_url = '/login/'
+    permission_required = ["belle_space.view_appointment"]
     def get(self, request):
         appointments = Appointment.objects.annotate(
             fullname=Concat(F('user_id__first_name'), Value(' '), F('user_id__last_name'))
@@ -220,12 +259,20 @@ class AppointmentView(View):
         return render(request, "appointment.html", context)
     
     def delete(self, request, id):
-        appointment = Appointment.objects.get(pk=id)
-        appointment.staff_id.clear()  # Clear the many-to-many relationships
-        appointment.delete()
-        return JsonResponse({'status': 'ok'})
+        if not request.user.has_perm('belle_space.delete_appointment'):
+            raise PermissionDenied  # Raise a 403 error if the user lacks permission
+        
+        try:
+            appointment = Appointment.objects.get(pk=id)
+            appointment.staff_id.clear()  # Clear the many-to-many relationships
+            appointment.delete()
+            return JsonResponse({'status': 'ok'})
+        except Appointment.DoesNotExist:
+            return JsonResponse({'status': 'error', 'message': 'Appointment not found'}, status=404)
 
-class AppointmentFormView(View):
+class AppointmentFormView(LoginRequiredMixin, PermissionRequiredMixin , View):
+    login_url = '/login/'
+    permission_required = ["belle_space.add_appointment"]
     def get(self, request):
         form = AppointmentForm()
         return render(request, 'appointment_form.html', {"form": form})
@@ -249,3 +296,9 @@ def load_services(request):
     category_id = request.GET.get("category")
     services = Service.objects.filter(category_id=category_id)
     return render(request, "service_options.html", {"services": services})
+
+
+class AppointmentStaff(View):
+    def get(self, request):
+        appoint_staff = Appointment.objects.filter(staff_id = request.user.id)
+        return render(request, 'appointment_staff.html', appoint_staff)
