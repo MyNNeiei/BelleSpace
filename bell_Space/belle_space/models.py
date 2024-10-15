@@ -47,7 +47,7 @@ class Appointment(models.Model):
     appointment_date = models.DateTimeField()
     status = models.CharField(max_length=10, choices=Status.choices, default=Status.PENDING)
     staff_id = models.ManyToManyField("Staff")
-    service = models.ManyToManyField("Service")
+    service = models.ManyToManyField("Service", blank=True)
 
 
 class Service(models.Model):
