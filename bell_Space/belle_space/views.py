@@ -58,15 +58,16 @@ class RegisterFormView(View):
         return render(request, 'index.html', {"form": form})
 
    
-class ProfileView(LoginRequiredMixin, PermissionRequiredMixin, View):
-    login_url = '/profile/'
-    permission_required = ["usersdetail.view_user"]
+class ProfileView(View):
+    # login_url = '/profile/'
+    # permission_required = ["usersdetail.view_user"]
     def get(self, request):
         return render(request, 'profile/profile.html')
 
-class ProfileEditView(LoginRequiredMixin, PermissionRequiredMixin, View):
-    permission_required = ["belle_space.view_profile", "belle_space.change_profile"]
+class ProfileEditView(View):
+    # permission_required = ["belle_space.view_profile", "belle_space.change_profile"]
     def get(self, request):
+        
         user = request.user
         userdetail = UsersDetail.objects.get(user=user)
         form = EditProfileForm(instance=user,initial={
