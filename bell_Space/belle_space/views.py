@@ -131,22 +131,6 @@ class ProfileEditView(LoginRequiredMixin, PermissionRequiredMixin, View):
             userdetail.save()
             return redirect('profile')
         return render(request, 'profile/profile.html', {'form': form})
-class PasswordChangeView(LoginRequiredMixin, View):
-    login_url = 'login'
-
-    def get(self, request):
-        new = request.user
-        form = SetPasswordForm(user=new)
-        return render(request, 'password.html', {'form': form})
-    
-    def post(self, request):
-        new = request.user
-        form = SetPasswordForm(data=request.POST, user=new)
-        if form.is_valid():
-            form.save()
-            update_session_auth_hash(request, request.user)
-            return redirect('profile')
-        return render(request, 'password.html', {'form': form})
 class AppointmentView(LoginRequiredMixin, PermissionRequiredMixin, View):
     login_url = '/login/'
     permission_required = ["belle_space.view_appointment"]

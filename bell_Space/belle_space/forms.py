@@ -49,9 +49,9 @@ class UserRegisterForm(UserCreationForm):
         cleaned_data = super().clean()
         birth_date = cleaned_data.get("birth_date")
         birth_now = datetime.now().date()
-        if birth_date > birth_now and birth_date == birth_now:
+        if birth_date >= birth_now and birth_date == birth_now:
             raise ValidationError(
-                    "birth_date ว่าจะต้องไม่เป็นวันในอนาคต"
+                    "วันเกิด ว่าจะต้องไม่เป็นวันในอนาคต"
             )
         return cleaned_data
     def clean_phone_number(self):
@@ -118,22 +118,6 @@ class EditProfileForm(forms.ModelForm):
         return phone_number
     
     
-    
-class ChangePasswordForm(UserCreationForm):
-    class Meta:
-        model = User
-        fields = [ 'password1',
-                'password2'
-                ]
-    def clean_password2(self):
-        password1 = self.cleaned_data.get("password1")
-        password2 = self.cleaned_data.get("password2")
-        if password1 and password2 and password1 != password2:
-            raise forms.ValidationError(
-                self.error_messages['password_mismatch'],
-                code='password_mismatch',
-            )
-        return password2
 
 class EditProfileForm(forms.ModelForm):
     GENDER_CHOICES = [
@@ -300,16 +284,3 @@ class AppointmentForm(ModelForm):
 
         return appointment_date
 
-class StatusUpdateForm(forms.ModelForm):
-    GENDER_CHOICES = [
-        ("", "ระหว่างตรวจสอบ"),
-        ("ตรวจสอบ", "ตรวจสอบ"),
-        ("ยกเลิก", "ยกเลิก"),
-        ("จองสำเร็จ", "จองสำเร็จ"),
-    ]
-    class Meta:
-        model = Appointment
-        fields = ['status']
-        widgets = {
-            "gender" : Select(attrs={'class': 'border border-gray-300 rounded px-3 py-2 w-full'}),
-        }

@@ -18,9 +18,9 @@
     <div class="content bg-[#EDDCC2] min-h-screen flex items-center justify-center">
         <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
             <h2 class="text-2xl font-bold mb-6 text-center text-gray-800">ลงทะเบียน</h2>
-            {{ form.non_field_errors }}
             <form method="post" action="{% url 'register_form' %}">
                 {% csrf_token %}
+                {{ form.non_field_errors }}
                 <div>
                     <div>
                         <label for="">ชื่อผู้ใช้</label>
