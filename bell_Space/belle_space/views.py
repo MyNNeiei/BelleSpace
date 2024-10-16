@@ -207,44 +207,44 @@ class AppointmentView(LoginRequiredMixin, PermissionRequiredMixin, View):
         appointment.staff.clear()  # Clear the many-to-many relationships
         appointment.delete()
         return JsonResponse({'status': 'ok'})
-# @login_required
+
 class AppointmentAddStaffView(View):
     def get(self, request, detail):
         appointment_detail = Appointment.objects.get(pk=detail)
         form = AppointmentAddStaffForm(instance=appointment_detail)
-        all_appointment = appointment_detail.staff.all()
+
         user_in_customer_group = request.user.groups.filter(name='Customer').exists()
         user_in_manager_group = request.user.groups.filter(name='Manager').exists()
         user_in_staff_group = request.user.groups.filter(name='Staff').exists()
         context = { "form" : form,
-                   'user_in_customer_group': user_in_customer_group,
-            'user_in_manager_group' : user_in_manager_group,
-            'user_in_staff_group' : user_in_staff_group}
+                    'user_in_customer_group': user_in_customer_group,
+                    'user_in_manager_group' : user_in_manager_group,
+                    'user_in_staff_group' : user_in_staff_group}
         return render(request, "appointment_addstaff.html", context)
     
     def post(self, request, detail):
         # for updating article instance set instance=article
         appointment_detail = Appointment.objects.get(pk=detail)
         form = AppointmentAddStaffForm(request.POST, instance=appointment_detail)
-        all_appointment = appointment_detail.staff.all()
         user_in_customer_group = request.user.groups.filter(name='Customer').exists()
         user_in_manager_group = request.user.groups.filter(name='Manager').exists()
         user_in_staff_group = request.user.groups.filter(name='Staff').exists()
+
         context = { "form" : form,
-                   'user_in_customer_group': user_in_customer_group,
-            'user_in_manager_group' : user_in_manager_group,
-            'user_in_staff_group' : user_in_staff_group}                                             
+                    'user_in_customer_group': user_in_customer_group,
+                    'user_in_manager_group' : user_in_manager_group,
+                    'user_in_staff_group' : user_in_staff_group}                                             
         if form.is_valid():                                                                      
             form.save()                                                                          
             return redirect('appointment')
 
         return render(request, "appointment_addstaff.html", context)
     
-    def put(self, request, appointment_id, staff_id):
+    def put(self, request, appointment_id, staff):
         appointment = Appointment.objects.get(id=appointment_id)
-        staff = Staff.objects.get(id=staff_id)
-        if staff not in appointment.staff_id.all():
-            appointment.staff_id.add(staff)
+        staff = Staff.objects.get(id=staff)
+        if staff not in appointment.staff.all():
+            appointment.staff.add(staff)
             return redirect('appointment')
         return JsonResponse({'status': 'ok'})
     
@@ -289,7 +289,7 @@ class AppointmentFormView(LoginRequiredMixin, PermissionRequiredMixin , View):
             # other context variables
         }
         return render(request, 'appointment_form.html', {"form": form,
-                                                         'context':context})
+                                                        'context':context})
 
     def post(self, request):
         form = AppointmentForm(request.POST)

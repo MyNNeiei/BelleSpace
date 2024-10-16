@@ -18,9 +18,9 @@ class UserRegisterForm(UserCreationForm):
         ("O", "Others"),
     ]
     gender = forms.ChoiceField(required=False, choices=GENDER_CHOICES,
-                               widget=forms.Select(attrs={'class': 'border border-gray-300 rounded px-3 py-2 w-full'}))
+                                widget=forms.Select(attrs={'class': 'border border-gray-300 rounded px-3 py-2 w-full'}))
     phone_number = forms.CharField(max_length=10,
-                                   widget=forms.TextInput(attrs={'class': 'border border-gray-300 rounded px-3 py-2 w-full', 'placeholder': 'กรอกเบอร์โทรศัพท์'}))
+                                widget=forms.TextInput(attrs={'class': 'border border-gray-300 rounded px-3 py-2 w-full', 'placeholder': 'กรอกเบอร์โทรศัพท์'}))
     birth_date = forms.DateField(
         widget=forms.DateInput(attrs={"type": "date", "class" : "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"})
     )
@@ -213,9 +213,9 @@ class EditProfileForm(forms.ModelForm):
         ("อื่นๆ", "อื่นๆ"),
     ]
     gender = forms.ChoiceField(choices=GENDER_CHOICES,
-                               widget=forms.Select(attrs={'class': 'border border-gray-300 rounded px-3 py-2 w-full'}))
+                                widget=forms.Select(attrs={'class': 'border border-gray-300 rounded px-3 py-2 w-full'}))
     phone_number = forms.CharField(required=False, max_length=10,
-                                   widget=forms.TextInput(attrs={'class': 'border border-gray-300 rounded px-3 py-2 w-full', 'placeholder': 'กรอกเบอร์โทรศัพท์'}))
+                                widget=forms.TextInput(attrs={'class': 'border border-gray-300 rounded px-3 py-2 w-full', 'placeholder': 'กรอกเบอร์โทรศัพท์'}))
     birth_date = forms.DateField(
         widget=forms.DateInput(attrs={"type": "date", "class" : "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"})
     )
@@ -339,7 +339,7 @@ class ChangePasswordForm(UserCreationForm):
 #         return cleaned_data
 
 class AppointmentAddStaffForm(forms.ModelForm):
-    staff_id = forms.ModelMultipleChoiceField(
+    staff = forms.ModelMultipleChoiceField(
         queryset=Staff.objects.all(),
         widget=forms.SelectMultiple,
         label='พนักงาน'
@@ -350,28 +350,32 @@ class AppointmentAddStaffForm(forms.ModelForm):
         fields = [
             "staff"
         ]
-    
-    def clean(self):
-        cleaned_data = super().clean()
-        staff_members = cleaned_data.get("staff")  # Get the selected staff
 
-        # Get the appointment time, make sure it's not None
-        appointment_time = self.instance.appointment_date
-        if not appointment_time:
-            raise ValidationError("เวลานัดหมายไม่สามารถว่างได้")
+    # def clean(self):
+    #     cleaned_data = super().clean()
+    #     staff = cleaned_data.get("staff")
+    #     return cleaned_data
+    # def clean(self):
+    #     cleaned_data = super().clean()
+    #     staff_members = cleaned_data.get("staff")  # Get the selected staff
 
-        # Ensure staff members are selected before iterating
-        if staff_members:
-            # Loop through each selected staff member and check availability
-            for staff_member in staff_members:
-                if staff_member.available_time != appointment_time:
-                    raise ValidationError(
-                        f"พนักงาน {staff_member.user.first_name} {staff_member.user.last_name} ไม่พร้อมในช่วงเวลาที่เลือก"
-                    )
-        else:
-            raise ValidationError("กรุณาเลือกพนักงาน")
+    #     # Get the appointment time, make sure it's not None
+    #     appointment_time = self.instance.appointment_date
+    #     if not appointment_time:
+    #         raise ValidationError("เวลานัดหมายไม่สามารถว่างได้")
 
-        return cleaned_data
+    #     # Ensure staff members are selected before iterating
+    #     if staff_members:
+    #         # Loop through each selected staff member and check availability
+    #         for staff_member in staff_members:
+    #             if staff_member.available_time != appointment_time:
+    #                 raise ValidationError(
+    #                     f"พนักงาน {staff_member.user.first_name} {staff_member.user.last_name} ไม่พร้อมในช่วงเวลาที่เลือก"
+    #                 )
+    #     else:
+    #         raise ValidationError("กรุณาเลือกพนักงาน")
+
+    #     return cleaned_data
 
 class AppointmentEditStatusForm(forms.ModelForm):
     status = forms.ChoiceField(
@@ -401,7 +405,6 @@ class AppointmentForm(ModelForm):
                 'class': 'p-2 rounded-md ml-6 text-xl',
             }),
         }
-
     category = forms.ModelChoiceField(
         queryset=Categories.objects.all(),
         label="หมวดหมู่",
@@ -411,7 +414,6 @@ class AppointmentForm(ModelForm):
             'class': 'px-4 rounded-md ml-6 text-xl'
         }),
     )
-
     service = forms.ModelMultipleChoiceField(
         queryset=Service.objects.none(),
         label="บริการ",
@@ -430,19 +432,15 @@ class AppointmentForm(ModelForm):
         cleaned_data = super().clean()
         appointment_date = cleaned_data.get("appointment_date")
         category = cleaned_data.get("category")
-        
-        # Get the current time in the correct timezone
         current_time = timezone.now()
 
-        # Ensure the appointment date is at least 12 hours in the future
         if appointment_date <= current_time + timedelta(hours=12):
             raise ValidationError("ต้องจองล่วงหน้าอย่างน้อย 12 ชั่วโมง")
 
-        # Ensure the user can only book 1 appointment per category per day
-        user = self.instance.user_id  # Assuming the form is tied to the user making the appointment
+        user = self.instance.user_id  
         existing_appointments = Appointment.objects.filter(
             user_id=user,
-            category=category,  # Check if the same category has been booked
+            category=category,  
             appointment_date__date=appointment_date.date()
         )
 
