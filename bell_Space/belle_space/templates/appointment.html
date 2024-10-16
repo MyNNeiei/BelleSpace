@@ -41,7 +41,7 @@
 
                         <a href="{% url 'appointment_addstaff' appointment.id %}"
                             class="bg-[#F4DC7B] p-2 text-[#0F0F0F] border-2 border-[#0F0F0F] ">เพิ่มพนักงาน</a>
-                        {% endif %}
+                            {% endif %}
                         <button type="button" onclick="deleteAppointment('{{appointment.id}}','{{csrf_token}}')"
                             class="bg-[#914D43] p-2 text-[#EDDCC2] border-2 border-[#0F0F0F]">ยกเลิก</button>
                         

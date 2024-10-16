@@ -347,12 +347,29 @@ class AppointmentAddStaffForm(forms.ModelForm):
     class Meta:
         model = Appointment
         fields = [
-            "staff_id"
+            "staff"
         ]
     
     def clean(self):
         cleaned_data = super().clean()
-        staff = cleaned_data.get("staff_id")
+        staff_members = cleaned_data.get("staff")  # Get the selected staff
+
+        # Get the appointment time, make sure it's not None
+        appointment_time = self.instance.appointment_date
+        if not appointment_time:
+            raise ValidationError("เวลานัดหมายไม่สามารถว่างได้")
+
+        # Ensure staff members are selected before iterating
+        if staff_members:
+            # Loop through each selected staff member and check availability
+            for staff_member in staff_members:
+                if staff_member.available_time != appointment_time:
+                    raise ValidationError(
+                        f"พนักงาน {staff_member.user.first_name} {staff_member.user.last_name} ไม่พร้อมในช่วงเวลาที่เลือก"
+                    )
+        else:
+            raise ValidationError("กรุณาเลือกพนักงาน")
+
         return cleaned_data
 
 class AppointmentEditStatusForm(forms.ModelForm):
