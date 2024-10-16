@@ -51,7 +51,7 @@ class LoginFormView(View):
                 
                 elif get_group == "Staff":
                     login(request, user)
-                    return redirect('appointment_staff')
+                    return redirect('home')
 
                 elif get_group == "Manager":
                     login(request, user)
@@ -170,17 +170,30 @@ class AppointmentView(LoginRequiredMixin, PermissionRequiredMixin, View):
         user_in_manager_group = request.user.groups.filter(name='Manager').exists()
         user_in_staff_group = request.user.groups.filter(name='Staff').exists()
         # Annotate services for each appointment
+        if user_in_customer_group:
+            # Show customer's own appointments
+            appointments_to_display = appoint_customer
+        elif user_in_manager_group:
+            # Manager sees all appointments
+            appointments_to_display = appointments
+        elif user_in_staff_group:
+            # Staff sees only their appointments
+            appointments_to_display = appoint_staff
+        else:
+            # If not in any of the groups, display no appointments
+            appointments_to_display = []
         for appointment in appointments:
             appointment.services = appointment.service.all()
 
         appointment_num = appointments.count()
         context = {
             "num": appointment_num,
-            "appointments": appointments,
+            "appointments": appointments_to_display,
             'user_in_customer_group': user_in_customer_group,
             'user_in_manager_group' : user_in_manager_group,
             'user_in_staff_group' : user_in_staff_group,
-            'appoint_staff' : appoint_staff
+            'appoint_staff' : appoint_staff,
+            'appoint_customer' : appoint_customer
         }
 
         
@@ -200,8 +213,13 @@ class AppointmentAddStaffView(View):
         appointment_detail = Appointment.objects.get(pk=detail)
         form = AppointmentAddStaffForm(instance=appointment_detail)
         all_appointment = appointment_detail.staff.all()
-
-        context = { "form" : form,}
+        user_in_customer_group = request.user.groups.filter(name='Customer').exists()
+        user_in_manager_group = request.user.groups.filter(name='Manager').exists()
+        user_in_staff_group = request.user.groups.filter(name='Staff').exists()
+        context = { "form" : form,
+                   'user_in_customer_group': user_in_customer_group,
+            'user_in_manager_group' : user_in_manager_group,
+            'user_in_staff_group' : user_in_staff_group}
         return render(request, "appointment_addstaff.html", context)
     
     def post(self, request, detail):
@@ -209,7 +227,13 @@ class AppointmentAddStaffView(View):
         appointment_detail = Appointment.objects.get(pk=detail)
         form = AppointmentAddStaffForm(request.POST, instance=appointment_detail)
         all_appointment = appointment_detail.staff.all()
-        context = { "form" : form,}                                             
+        user_in_customer_group = request.user.groups.filter(name='Customer').exists()
+        user_in_manager_group = request.user.groups.filter(name='Manager').exists()
+        user_in_staff_group = request.user.groups.filter(name='Staff').exists()
+        context = { "form" : form,
+                   'user_in_customer_group': user_in_customer_group,
+            'user_in_manager_group' : user_in_manager_group,
+            'user_in_staff_group' : user_in_staff_group}                                             
         if form.is_valid():                                                                      
             form.save()                                                                          
             return redirect('appointment')
@@ -300,17 +324,3 @@ def load_services(request):
     services = Service.objects.filter(category_id=category_id)
     return render(request, "service_options.html", {"services": services})
 
-
-class AppointmentStaff(LoginRequiredMixin, PermissionRequiredMixin , View):
-    login_url = '/login/'
-    permission_required = ["belle_space.view_appointment"]
-    def get(self, request):
-        appoint_staff = Appointment.objects.filter(staff_id = request.user.id)
-        return render(request, 'appointment_staff.html', appoint_staff)
-    
-class AppointmentCustomer(LoginRequiredMixin, PermissionRequiredMixin , View):
-    login_url = '/login/'
-    permission_required = ["belle_space.view_appointment"]
-    def get(self, request):
-        appoint_customer = Appointment.objects.filter(user = request.user.id)
-        return render(request, 'appointment_staff.html', appoint_customer)
