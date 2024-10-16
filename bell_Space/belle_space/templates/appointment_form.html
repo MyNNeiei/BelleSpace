@@ -1,15 +1,14 @@
-
 {% extends 'layout.html' %}
 {% load static %}
 {% block title %}จองบริการ{% endblock %}
 {% block content %}
-<div class="bg-[#D18F90] min-h-screen flex items-center justify-center py-12 px-10 sm:px-6 lg:px-8">
+<div class="bg-[#D18F90] min-h-screen flex items-center justify-center">
     <div class="max-w-md w-full space-y-8 bg-[#EDDCC2] p-6 rounded-lg shadow-md">
         <h2 class="mt-6 text-center text-5xl font-extrabold text-[#74342B]">จองบริการ</h2>
         <form method="POST">
             {% csrf_token %}
             <div class="my-8">
-                <label  class="block text-xl font-medium text-[#74342B] mb-2">{{ form.category.label }}</label>
+                <label class="block text-xl font-medium text-[#74342B] mb-2">{{ form.category.label }}</label>
                 {{ form.category }}
             </div>
             <div class="my-8">
@@ -26,7 +25,7 @@
                 <label class="block text-xl font-medium text-[#74342B] mb-2">{{ form.appointment_date.label }}</label>
                 {{ form.appointment_date }}
             </div>
-            <button class="bg-[#74342B] group relative flex justify-center py-4 w-full mx-auto text-xl font-medium rounded-md text-[#EDDCC2] hover:bg-[#3A1212]">
+            <button class="bg-[#74342B] w-full py-4 mx-auto text-xl rounded-md text-[#EDDCC2] hover:bg-[#3A1212]">
                 จองคิว
             </button>
         </form>

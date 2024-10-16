@@ -1,4 +1,4 @@
-from datetime import date,datetime
+from datetime import date,datetime, timedelta
 from django import forms
 from django.forms import DateTimeInput, EmailInput, ModelForm, PasswordInput, Select, SplitDateTimeField
 from django.forms.widgets import Textarea, TextInput, DateInput
@@ -135,21 +135,21 @@ class EditProfileForm(forms.ModelForm):
             "gender" : Select(attrs={'class': 'border border-gray-300 rounded px-3 py-2 w-full'}),
             "phone_number" : TextInput(attrs={'class': 'border border-gray-300 rounded px-3 py-2 w-full', 'placeholder': 'กรอกเบอร์โทรศัพท์'}),
         }
-    def clean_birthdate(self):
+    def clean_birth_date(self):
         cleaned_data = super().clean()
         birth_date = cleaned_data.get("birth_date")
         birth_now = datetime.now().date()
-        if birth_date > birth_now and birth_date == birth_now:
-            raise ValidationError(
-                    "birth_date ว่าจะต้องไม่เป็นวันในอนาคต"
-            )
-        return cleaned_data
+        if birth_date and birth_date > birth_now:
+            raise ValidationError("วันเกิดไม่สามารถเป็นวันในอนาคตได้")
+        return birth_date
+    
     def clean_phone_number(self):
         phone_number = self.cleaned_data["phone_number"]
         
+        
         data = UsersDetail.objects.filter(phone_number = phone_number).exclude(user= self.instance.id)
         if data.count():
-            raise ValidationError("Phone number Already Exist")
+            raise ValidationError("เบอร์โทรศัพท์นี้มีอยู่ในระบบแล้ว")
         if len(phone_number) != 10 or not phone_number.isdigit():
             raise ValidationError("เบอร์โทรศัพท์ควรมีแค่10 ตัวเลข")
         return phone_number
@@ -207,10 +207,10 @@ class ChangePasswordForm(UserCreationForm):
 class EditProfileForm(forms.ModelForm):
     GENDER_CHOICES = [
         ("", "เลือกเพศ"),
-        ("M", "Male"),
-        ("F", "Female"),
+        ("ผู้ชาย", "ผู้ชาย"),
+        ("ผู้หญิง", "ผู้หญิง"),
         ("LGBTQ", "LGBTQ+"),
-        ("O", "Others"),
+        ("อื่นๆ", "อื่นๆ"),
     ]
     gender = forms.ChoiceField(choices=GENDER_CHOICES,
                                 widget=forms.Select(attrs={'class': 'border border-gray-300 rounded px-3 py-2 w-full'}))
@@ -239,24 +239,33 @@ class EditProfileForm(forms.ModelForm):
             "gender" : Select(attrs={'class': 'border border-gray-300 rounded px-3 py-2 w-full'}),
             "phone_number" : TextInput(attrs={'class': 'border border-gray-300 rounded px-3 py-2 w-full', 'placeholder': 'กรอกเบอร์โทรศัพท์'}),
         }
-    def clean_birthdate(self):
+    def clean(self):
         cleaned_data = super().clean()
         birth_date = cleaned_data.get("birth_date")
         birth_now = datetime.now().date()
-        if birth_date > birth_now and birth_date == birth_now:
+        if (birth_date >= birth_now):
             raise ValidationError(
                     "birth_date ว่าจะต้องไม่เป็นวันในอนาคต"
             )
         return cleaned_data
     def clean_phone_number(self):
         phone_number = self.cleaned_data["phone_number"]
-        
         data = UsersDetail.objects.filter(phone_number = phone_number).exclude(user= self.instance.id)
         if data.count():
             raise ValidationError("Phone number Already Exist")
         if len(phone_number) != 10 or not phone_number.isdigit():
             raise ValidationError("เบอร์โทรศัพท์ควรมีแค่10 ตัวเลข")
         return phone_number
+    def clean_password2(self):
+        
+        password1 = self.cleaned_data.get("password1")
+        password2 = self.cleaned_data.get("password2")
+        if password1 and password2 and password1 != password2:
+            raise forms.ValidationError(
+                self.error_messages['รหัสไม่ตรงกัน'],
+                code='password_mismatch',
+            )
+        return password2
     
     
     
@@ -328,7 +337,7 @@ class ChangePasswordForm(UserCreationForm):
 #             )
 #         return cleaned_data
 
-class AppointmentDetailForm(forms.ModelForm):
+class AppointmentAddStaffForm(forms.ModelForm):
     staff_id = forms.ModelMultipleChoiceField(
         queryset=Staff.objects.all(),
         widget=forms.SelectMultiple,
@@ -346,6 +355,19 @@ class AppointmentDetailForm(forms.ModelForm):
         staff = cleaned_data.get("staff_id")
         return cleaned_data
 
+class AppointmentEditStatusForm(forms.ModelForm):
+    status = forms.ChoiceField(
+        choices=Appointment.Status.choices,
+        widget=forms.Select(attrs={
+            'class': 'px-4 rounded-md text-xl'
+        }),
+        label="สถานะ"
+    )
+
+    class Meta:
+        model = Appointment
+        fields = ['status']
+    
 class AppointmentForm(ModelForm):
     class Meta:
         model = Appointment
@@ -376,7 +398,7 @@ class AppointmentForm(ModelForm):
         queryset=Service.objects.none(),
         label="บริการ",
         widget=forms.SelectMultiple(attrs={
-            "class": "form-multiselect w-full p-3 rounded-md border border-gray-300 bg-white text-gray-900 focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 shadow-sm text-xl"
+            "class": "form-multiselect"
         })
     )
     def __init__(self, *args, **kwargs):
@@ -386,3 +408,41 @@ class AppointmentForm(ModelForm):
             self.fields["service"].queryset = Service.objects.filter(category_id=category_id)
         else:
             self.fields["service"].queryset = Service.objects.none()
+    def clean_appointment_date(self):
+        cleaned_data = super().clean()
+        appointment_date = cleaned_data.get("appointment_date")
+        category = cleaned_data.get("category")
+        
+        # Get the current time in the correct timezone
+        current_time = timezone.now()
+
+        # Ensure the appointment date is at least 12 hours in the future
+        if appointment_date <= current_time + timedelta(hours=12):
+            raise ValidationError("ต้องจองล่วงหน้าอย่างน้อย 12 ชั่วโมง")
+
+        # Ensure the user can only book 1 appointment per category per day
+        user = self.instance.user_id  # Assuming the form is tied to the user making the appointment
+        existing_appointments = Appointment.objects.filter(
+            user_id=user,
+            category=category,  # Check if the same category has been booked
+            appointment_date__date=appointment_date.date()
+        )
+
+        if existing_appointments.exists():
+            raise ValidationError("คุณสามารถจองได้เพียง 1 category ต่อวันเท่านั้น")  # Only 1 booking per category per day is allowed
+
+        return appointment_date
+
+class StatusUpdateForm(forms.ModelForm):
+    GENDER_CHOICES = [
+        ("", "ระหว่างตรวจสอบ"),
+        ("ตรวจสอบ", "ตรวจสอบ"),
+        ("ยกเลิก", "ยกเลิก"),
+        ("จองสำเร็จ", "จองสำเร็จ"),
+    ]
+    class Meta:
+        model = Appointment
+        fields = ['status']
+        widgets = {
+            "gender" : Select(attrs={'class': 'border border-gray-300 rounded px-3 py-2 w-full'}),
+        }

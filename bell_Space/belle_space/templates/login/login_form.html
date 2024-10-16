@@ -16,24 +16,24 @@
 </head>
 <body class="content">
     <div class="form bg-[#74342B] h-screen w-full flex justify-center items-center flex-col">
-        <h1 class="text-3xl text-white m-5">Login Forms</h1>
+        <h1 class="text-3xl text-white m-5">เข้าสู่ระบบ</h1>
         {{ form.non_field_errors }}
-        <form method="post" action="{% url 'login_form' %}" class="flex justify-center items-center flex-col space-y-4 bg-white p-8 rounded-lg shadow-md">
+        <form method="post" action="{% url 'login_form' %}" class="flex justify-center items-center flex-col space-y-4 bg-[#EDDCC2] p-8 rounded-lg shadow-md">
             {% csrf_token %}
             <div class="flex flex-col">
-                <label for="">Username</label>
+                <label class="text-[#74342B]">ชื่อผู้ใช้</label>
                 <input class="border border-gray-300 rounded px-3 py-2 w-full" type="text" name="username" 
                     id="{{form.username.id_for_label}}" placeholder="Username">
 
-                <label for="">Password</label>
+                <label class="text-[#74342B]">รหัสผ่าน</label>
                 <input class="border border-gray-300 rounded px-3 py-2 w-full" type="password" name="password" 
                     id="{{form.password.id_for_label}}" placeholder="Password">
             </div>
-            <div class="flex justify-start items-center w-full">
-                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Submit</button>
+            <div class="flex justify-center items-center w-full">
+                <button type="submit" class="bg-[#D18F90] text-[#74342B] px-4 py-2 rounded hover:bg-[#74342B] hover:text-white">Submit</button>
             </div>
-            <div class="flex justify-end flex-row gap-8 w-full">
-                <p>หากไม่มี Account</p>
+            <div class="flex justify-center flex-row gap-8 w-full">
+                <p class="text-[#74342B]">หากไม่มี Account</p>
                 <a href="{% url 'register_form' %}" class="text-[#74342B] hover:underline">Sign up</a>
             </div>
         </form>
