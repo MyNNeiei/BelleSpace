@@ -28,7 +28,7 @@
                     </td>
                     <!-- บริการ -->
                     <td class="py-4 text-center">
-                        {% for service in appointment.services.all %}  
+                        {% for service in appointment.service.all %}  
                         {{ service.name }}{% if not forloop.last %}, {% endif %}
                     {% endfor %}
                     </td>

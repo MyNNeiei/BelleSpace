@@ -1,16 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User 
 # Create your models here.
-# class Users(models.Model):     
-#     first_name = models.CharField(max_length=155, null=True)
-#     last_name = models.CharField(max_length=155, null=True)
-#     birth_date = models.DateTimeField()
-#     email = models.EmailField(null=True)
-#     username = models.CharField(max_length=15,null=True)
-#     password = models.CharField(max_length=255)
-#     
-#     def get_full_name(self):
-#         return f"{self.first_name} {self.last_name}"
 class UsersDetail(models.Model):
     class Gender(models.Choices):
         M = "ผู้ชาย"
@@ -42,7 +32,7 @@ class Appointment(models.Model):
         CANCELLED = "ยกเลิก", "ยกเลิก"
         COMPLETED = "จองสำเร็จ", "จองสำเร็จ"
     
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)  # Linking with the built-in User model
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     category = models.ForeignKey("Categories", on_delete=models.SET_NULL, null=True, blank=True)
     appointment_date = models.DateTimeField()
     status = models.CharField(max_length=10, choices=Status.choices, default=Status.PENDING)

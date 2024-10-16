@@ -1,13 +1,13 @@
 
-    document.getElementById('category-select').addEventListener('change', function () {
-        var categoryId = this.value;
-        var serviceSelect = document.getElementById('service-select');
+document.getElementById('category-select').addEventListener('change', function () {
+    var categoryId = this.value;
+    var serviceSelect = document.getElementById('service-select');
 
-        // Clear existing options
-        serviceSelect.innerHTML = '';
+    // Clear existing options
+    serviceSelect.innerHTML = '';
 
-        if (categoryId) {
-            fetch(`/get-services-by-category/${categoryId}/`)
+    if (categoryId) {
+        fetch(`/get-services-by-category/${categoryId}/`)
             .then(response => response.json())
             .then(data => {
                 data.services.forEach(service => {
@@ -18,5 +18,5 @@
                 });
             })
             .catch(error => console.error('Error:', error));
-        }
-    });
+    }
+});
