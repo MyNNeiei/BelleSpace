@@ -18,7 +18,7 @@ class UserRegisterForm(UserCreationForm):
         ("O", "Others"),
     ]
     gender = forms.ChoiceField(required=False, choices=GENDER_CHOICES,
-                                widget=forms.Select(attrs={'class': 'border border-gray-300 rounded px-3 py-2 w-full'}))
+                                widget=forms.Select(attrs={'class': 'border border-gray-300 rounded px-3 py-2 w-full', 'placeholder': 'เลือกเพศ'}))
     phone_number = forms.CharField(max_length=10,
                                 widget=forms.TextInput(attrs={'class': 'border border-gray-300 rounded px-3 py-2 w-full', 'placeholder': 'กรอกเบอร์โทรศัพท์'}))
     birth_date = forms.DateField(
@@ -38,12 +38,12 @@ class UserRegisterForm(UserCreationForm):
             "birth_date",
         ]
         widgets = {
-            "username" : TextInput(attrs={'class': 'border border-gray-300 rounded px-3 py-2 w-full', 'placeholder': 'Username'}),
-            "password1" : PasswordInput(attrs={'class': 'border border-gray-300 rounded px-3 py-2 w-full', 'placeholder': 'Password'}),
-            "password2" : PasswordInput(attrs={'class': 'border border-gray-300 rounded px-3 py-2 w-full', 'placeholder': 'Confirm Password'}),
-            "email" : EmailInput(attrs={'class': 'border border-gray-300 rounded px-3 py-2 w-full', 'placeholder': 'Username'}),
-            "first_name" : TextInput(attrs={'class': 'border border-gray-300 rounded px-3 py-2 w-full', 'placeholder': 'First_name'}),
-            "last_name" : TextInput(attrs={'class': 'border border-gray-300 rounded px-3 py-2 w-full', 'placeholder': 'Last_name'}),
+            "username" : TextInput(attrs={'class': 'border border-gray-300 rounded px-3 py-2 w-full', 'placeholder': 'กรอกชื่อบัญชีผู้ใช้'}),
+            "password1" : PasswordInput(attrs={'class': 'border border-gray-300 rounded px-3 py-2 w-full', 'placeholder': 'กรอกรหัสผ่าน'}),
+            "password2" : PasswordInput(attrs={'class': 'border border-gray-300 rounded px-3 py-2 w-full', 'placeholder': 'ยืนยันรหัสผ่าน'}),
+            "email" : EmailInput(attrs={'class': 'border border-gray-300 rounded px-3 py-2 w-full', 'placeholder': 'กรอกอีเมล'}),
+            "first_name" : TextInput(attrs={'class': 'border border-gray-300 rounded px-3 py-2 w-full', 'placeholder': 'กรอกชื่อจริง'}),
+            "last_name" : TextInput(attrs={'class': 'border border-gray-300 rounded px-3 py-2 w-full', 'placeholder': 'กรอกนามสกุล'}),
         }
     def clean_birthdate(self):
         cleaned_data = super().clean()
