@@ -7,6 +7,7 @@
         <h2 class="mt-6 text-center text-4xl font-extrabold text-[#74342B]">สถานะการจอง</h2>
         <form class="mt-8 space-y-6" method="post">
             {% csrf_token %}
+            {{ form.non_field_errors }}
             <div class="flex items-center mb-2">
                 <label class="flex text-xl font-medium text-[#74342B] mr-4">{{ form.status.label }}</label>
                 <div class="flex-grow">{{ form.status }}</div>

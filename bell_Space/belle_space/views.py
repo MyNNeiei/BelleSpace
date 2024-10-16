@@ -9,7 +9,7 @@ from django.core.exceptions import PermissionDenied
 from .forms import *
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import logout, login
-from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.forms import AuthenticationForm,SetPasswordForm
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import Group
@@ -33,29 +33,13 @@ class IndexView(View):
 class LoginFormView(View):
     def get(self, request):
         form = AuthenticationForm()
-
         return render(request, "login/login_form.html" , {"form": form})
     def post(self, request):
         form = AuthenticationForm(data=request.POST)
         
         if form.is_valid():
             user = form.get_user()
-            user_groups = user.groups.all()
-            for group in user_groups:
-                get_group = group.name  
-                
-                # ผู้ใช้ตรงกับ group ไหน เด้งไปหน้านั้น
-                if get_group == "Customer":
-                    login(request, user)
-                    return redirect('home')
-                
-                elif get_group == "Staff":
-                    login(request, user)
-                    return redirect('home')
-
-                elif get_group == "Manager":
-                    login(request, user)
-                    return redirect('home')
+            login(request, user)
             return redirect('home')# Redirect to home after successful login
         print(form.errors)
         return render(request, "login/login_form.html", {"form": form})        
@@ -67,13 +51,13 @@ class Logout(View):
 class RegisterFormView(View):
     def get(self, request):
         form = UserRegisterForm()
-        return render(request, "login/register_form.html" , {"form": form})
+        return render(request, "login/register_form.html", {"form": form})
     def post(self, request):
         form = UserRegisterForm(request.POST)
         if form.is_valid():
-            user = form.save()
+            user = form.save(commit=False)
             user.set_password(form.cleaned_data['password1'])
-            user.save()
+            user.save() 
             UsersDetail.objects.create(
                 user=user,
                 gender=form.cleaned_data['gender'],
@@ -81,7 +65,8 @@ class RegisterFormView(View):
                 birth_date=form.cleaned_data['birth_date'],
                 image_profile=form.cleaned_data.get('image_profile')
             )
-            customer_group = Group.objects.get(name='Customer')  # Replace with your group name
+            customer_group = Group.objects.get(name='Customer')  # แทนที่ด้วยชื่อกลุ่มที่คุณต้องการ
+            user.groups.add(customer_group)
             user.groups.add(customer_group)
             login(request, user)
             return redirect('login_form')
@@ -93,11 +78,15 @@ class RegisterFormView(View):
 class ProfileView(LoginRequiredMixin, PermissionRequiredMixin,View):
     login_url = '/login/'
     permission_required = ["belle_space.view_usersdetail"]
+    
     def get(self, request):
+        user_detail = UsersDetail.objects.get(user=request.user)
+        
         user_in_customer_group = request.user.groups.filter(name='Customer').exists()
         user_in_manager_group = request.user.groups.filter(name='Manager').exists()
         user_in_staff_group = request.user.groups.filter(name='Staff').exists()
         context = {
+            'user_detail': user_detail,
             'user_in_customer_group': user_in_customer_group,
             'user_in_manager_group' : user_in_manager_group,
             'user_in_staff_group' : user_in_staff_group
@@ -142,21 +131,22 @@ class ProfileEditView(LoginRequiredMixin, PermissionRequiredMixin, View):
             userdetail.save()
             return redirect('profile')
         return render(request, 'profile/profile.html', {'form': form})
-class ChangePassword(LoginRequiredMixin, PermissionRequiredMixin, View):
-    login_url = '/login/'
-    permission_required = ["belle_space.change_usersdetail"]
+class PasswordChangeView(LoginRequiredMixin, View):
+    login_url = 'login'
+
+    def get(self, request):
+        new = request.user
+        form = SetPasswordForm(user=new) # ใช้ของdjango ให้รู้ว่า user คนไหนที่ต้องการเปลี่ยนรหัส
+        return render(request, 'password.html', {'form': form})
+    
     def post(self, request):
-        form = PasswordChangeForm(user=request.user, data=request.POST)
+        new = request.user
+        form = SetPasswordForm(data=request.POST, user=new)
         if form.is_valid():
-            user = form.save()
-            update_session_auth_hash(request, user)  # Important for keeping the user logged in
-            messages.success(request, 'Your password was successfully updated!')
-            return redirect('change_password')
-        else:
-            messages.error(request, 'Please correct the error below.')
-        
-        form = ChangePasswordForm(user=request.user)
-        return render(request, 'change_password.html', {'form': form})
+            form.save()
+            update_session_auth_hash(request, request.user) # ไม่ให้มัน logout ออกหลังจากเปลี่ยนรหัส เป็นการอัปเดตเซสชันหลังบ้าน import มา
+            return redirect('profile')
+        return render(request, 'password.html', {'form': form})
 class AppointmentView(LoginRequiredMixin, PermissionRequiredMixin, View):
     login_url = '/login/'
     permission_required = ["belle_space.view_appointment"]
@@ -243,8 +233,8 @@ class AppointmentAddStaffView(View):
     def put(self, request, appointment_id, staff_id):
         appointment = Appointment.objects.get(id=appointment_id)
         staff = Staff.objects.get(id=staff_id)
-        if staff not in appointment.staff_id.all():
-            appointment.staff_id.add(staff)
+        if staff not in appointment.staff.all():
+            appointment.staff.add(staff)
             return redirect('appointment')
         return JsonResponse({'status': 'ok'})
     

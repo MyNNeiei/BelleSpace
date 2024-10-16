@@ -22,7 +22,7 @@
                     <td class="text-center py-4 ">{{ appointment.appointment_date }}</td>
                     <!-- พนักงาน -->
                     <td class="py-4 text-center">
-                        {% for staff in appointment.staff_id.all %}
+                        {% for staff in appointment.staff.all %}
                             {{ staff.user.first_name }} {{ staff.user.last_name }}{% if not forloop.last %}, {% endif %}
                         {% endfor %}
                     </td>

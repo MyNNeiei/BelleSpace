@@ -31,8 +31,8 @@ class UsersDetail(models.Model):
 
 class Staff(models.Model):
     user = models.OneToOneField(User, on_delete=models.SET_NULL, null=True, blank=True)
-    position = models.CharField(max_length=255, null=True)
-    available_time = models.DateTimeField()
+    available_start_time = models.DateTimeField(null=True)
+    available_end_time = models.DateTimeField(null=True)
     def __str__(self):
         return f"{self.user.first_name} {self.user.last_name}"
     

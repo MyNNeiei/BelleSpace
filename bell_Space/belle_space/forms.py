@@ -245,7 +245,7 @@ class EditProfileForm(forms.ModelForm):
         birth_now = datetime.now().date()
         if (birth_date >= birth_now):
             raise ValidationError(
-                    "birth_date ว่าจะต้องไม่เป็นวันในอนาคต"
+                    "วันเกิด ว่าจะต้องไม่เป็นวันในอนาคต"
             )
         return cleaned_data
     def clean_phone_number(self):
@@ -269,21 +269,21 @@ class EditProfileForm(forms.ModelForm):
     
     
     
-class ChangePasswordForm(UserCreationForm):
-    class Meta:
-        model = User
-        fields = [ 'password1',
-                'password2'
-                ]
-    def clean_password2(self):
-        password1 = self.cleaned_data.get("password1")
-        password2 = self.cleaned_data.get("password2")
-        if password1 and password2 and password1 != password2:
-            raise forms.ValidationError(
-                self.error_messages['password_mismatch'],
-                code='password_mismatch',
-            )
-        return password2
+# class ChangePasswordForm(UserCreationForm):
+#     class Meta:
+#         model = User
+#         fields = [ 'password1',
+#                 'password2'
+#                 ]
+#     def clean_password2(self):
+#         password1 = self.cleaned_data.get("password1")
+#         password2 = self.cleaned_data.get("password2")
+#         if password1 and password2 and password1 != password2:
+#             raise forms.ValidationError(
+#                 self.error_messages['password_mismatch'],
+#                 code='password_mismatch',
+#             )
+#         return password2
 # class AppointmentForm(forms.ModelForm):
 #     # staff_id = forms.ModelChoiceField(
 #     #     queryset=Staff.objects.all(),
@@ -338,7 +338,7 @@ class ChangePasswordForm(UserCreationForm):
 #         return cleaned_data
 
 class AppointmentAddStaffForm(forms.ModelForm):
-    staff_id = forms.ModelMultipleChoiceField(
+    staff = forms.ModelMultipleChoiceField(
         queryset=Staff.objects.all(),
         widget=forms.SelectMultiple,
         label='พนักงาน'
@@ -352,23 +352,19 @@ class AppointmentAddStaffForm(forms.ModelForm):
     
     def clean(self):
         cleaned_data = super().clean()
-        staff_members = cleaned_data.get("staff")  # Get the selected staff
-
-        # Get the appointment time, make sure it's not None
-        appointment_time = self.instance.appointment_date
-        if not appointment_time:
-            raise ValidationError("เวลานัดหมายไม่สามารถว่างได้")
+        staff = cleaned_data.get("staff")  # Get the selected staff members
+        appointment_time = self.instance.appointment_date  # Get the appointment's time
 
         # Ensure staff members are selected before iterating
-        if staff_members:
-            # Loop through each selected staff member and check availability
-            for staff_member in staff_members:
-                if staff_member.available_time != appointment_time:
-                    raise ValidationError(
-                        f"พนักงาน {staff_member.user.first_name} {staff_member.user.last_name} ไม่พร้อมในช่วงเวลาที่เลือก"
-                    )
-        else:
+        if not staff:
             raise ValidationError("กรุณาเลือกพนักงาน")
+
+        # Loop through each selected staff member and check availability
+        for staff_member in staff:
+            if not (staff_member.available_start_time <= appointment_time <= staff_member.available_end_time):
+                raise ValidationError(
+                    f"พนักงาน {staff_member.user.first_name} {staff_member.user.last_name} ไม่พร้อมในช่วงเวลาที่เลือก"
+                )
 
         return cleaned_data
 
@@ -429,13 +425,12 @@ class AppointmentForm(ModelForm):
         cleaned_data = super().clean()
         appointment_date = cleaned_data.get("appointment_date")
         category = cleaned_data.get("category")
-        
-        # Get the current time in the correct timezone
         current_time = timezone.now()
+        # Get the current time in the correct timezone
 
         # Ensure the appointment date is at least 12 hours in the future
-        if appointment_date <= current_time + timedelta(hours=12):
-            raise ValidationError("ต้องจองล่วงหน้าอย่างน้อย 12 ชั่วโมง")
+        if appointment_date <= current_time + timedelta(hours=5):
+            raise ValidationError("ต้องจองล่วงหน้าอย่างน้อย 5 ชั่วโมง")
 
         # Ensure the user can only book 1 appointment per category per day
         user = self.instance.user_id  # Assuming the form is tied to the user making the appointment
@@ -445,8 +440,8 @@ class AppointmentForm(ModelForm):
             appointment_date__date=appointment_date.date()
         )
 
-        if existing_appointments.exists():
-            raise ValidationError("คุณสามารถจองได้เพียง 1 category ต่อวันเท่านั้น")  # Only 1 booking per category per day is allowed
+        if existing_appointments.exists() and appointment_date >= appointment_date + timedelta(hours=5):
+            raise ValidationError("คุณสามารถจองได้เพียง 1 category ต่อวันเท่านั้น และต้องจองล่วงหน้าอย่างน้อย 5 ชั่วโมง")  # Only 1 booking per category per day is allowed
 
         return appointment_date
 

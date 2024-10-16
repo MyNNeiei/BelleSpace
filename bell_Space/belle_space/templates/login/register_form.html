@@ -17,45 +17,45 @@
 <body>
     <div class="content bg-[#EDDCC2] min-h-screen flex items-center justify-center">
         <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
-            <h2 class="text-2xl font-bold mb-6 text-center text-gray-800">Register</h2>
+            <h2 class="text-2xl font-bold mb-6 text-center text-gray-800">ลงทะเบียน</h2>
+            {{ form.non_field_errors }}
             <form method="post" action="{% url 'register_form' %}">
                 {% csrf_token %}
-                {{ form.non_field_errors }}
                 <div>
                     <div>
-                        <label for="">Username</label>
+                        <label for="">ชื่อผู้ใช้</label>
                         {{form.username}}
                     </div>
                     <div>
-                        <label for="">Password</label>
+                        <label for="">รหัสผ่าน</label>
                         {{form.password1}}
                     </div>
                     <div>
-                        <label for="">Confirm Password</label>
+                        <label for="">ยืนยันรหัสผ่าน</label>
                         {{form.password2}}
                     </div>
                     <div>
-                        <label for="">Email</label>
+                        <label for="">อีเมล</label>
                         {{form.email}}
                     </div>
                     <div>
-                        <label for="">First Name</label>
+                        <label for="">ชื่อ</label>
                         {{form.first_name}}
                     </div>
                     <div>
-                        <label for="">Last Name</label>
+                        <label for="">นามสกุล</label>
                         {{form.last_name}}
                     </div>
                     <div>
-                        <label for="">Gender</label>
+                        <label for="">เพศ</label>
                         {{form.gender}}
                     </div>
                     <div>
-                        <label for="">Phone Number</label>
+                        <label for="">เบอร์โทรศัพท์</label>
                         {{form.phone_number}}
                     </div>
                     <div>
-                        <label for="">Birth Date</label>
+                        <label for="">วันเกิด</label>
                         {{form.birth_date}}
                     </div>
                 </div>
