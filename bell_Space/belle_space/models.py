@@ -42,11 +42,11 @@ class Appointment(models.Model):
         CANCELLED = "ยกเลิก", "ยกเลิก"
         COMPLETED = "จองสำเร็จ", "จองสำเร็จ"
     
-    user_id = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)  # Linking with the built-in User model
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)  # Linking with the built-in User model
     category = models.ForeignKey("Categories", on_delete=models.SET_NULL, null=True, blank=True)
     appointment_date = models.DateTimeField()
     status = models.CharField(max_length=10, choices=Status.choices, default=Status.PENDING)
-    staff_id = models.ManyToManyField("Staff")
+    staff = models.ManyToManyField("Staff")
     service = models.ManyToManyField("Service", blank=True)
 
 
